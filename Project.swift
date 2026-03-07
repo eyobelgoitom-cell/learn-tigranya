@@ -44,6 +44,7 @@ let project = Project(
             bundleId: "com.fidellearn.app.tests",
             deploymentTargets: .iOS("16.0"),
             sources: ["FidelLearnTests/Sources/**"],
+            resources: ["FidelLearn/Resources/Data/**"],
             dependencies: [.target(name: "FidelLearn")]
         ),
         .target(

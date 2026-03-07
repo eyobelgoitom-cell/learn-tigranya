@@ -11,7 +11,7 @@ final class LessonsViewModel: ObservableObject {
     private let progressService: ProgressServiceProtocol
 
     init(
-        lessonService: LessonServiceProtocol = LessonService(),
+        lessonService: LessonServiceProtocol = LocalLessonService(),
         progressService: ProgressServiceProtocol = ProgressService()
     ) {
         self.lessonService = lessonService

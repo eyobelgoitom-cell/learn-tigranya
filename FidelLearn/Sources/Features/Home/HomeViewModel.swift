@@ -14,7 +14,7 @@ final class HomeViewModel: ObservableObject {
 
     init(
         progressService: ProgressServiceProtocol = ProgressService(),
-        lessonService: LessonServiceProtocol = LessonService()
+        lessonService: LessonServiceProtocol = LocalLessonService()
     ) {
         self.progressService = progressService
         self.lessonService = lessonService
