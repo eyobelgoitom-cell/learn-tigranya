@@ -1,0 +1,602 @@
+---
+description: Development rules, branching strategy, and workflow for Tigrinya/Amharic iOS app
+alwaysApply: true
+---
+
+# Development Rules & Workflow
+
+**Project:** Tigrinya / Amharic Learning App
+**Platform:** Native iOS
+**Tech:** Swift + SwiftUI
+**Repository:** Git
+**Project Management:** Linear
+
+---
+
+# Core Principles
+
+Apply these principles to all development:
+
+1. **Simplicity first** — Prefer simple over complex solutions
+2. **Modular architecture** — Build components that are loosely coupled and highly cohesive
+3. **Testable code** — Write code that can be easily tested
+4. **Performance awareness** — Consider performance implications from the start
+5. **Security by default** — Build security into every layer
+
+---
+
+# 1. Branching Strategy
+
+Use a **structured Git workflow** inspired by GitFlow.
+
+## Main Branches
+
+```
+main
+staging
+develop
+```
+
+### main
+
+Production-ready code.
+
+Rules:
+
+• Always stable
+• Only CI can deploy from here
+• No direct commits
+• Only merge from **staging**
+
+---
+
+### staging
+
+Pre-production testing environment.
+
+Used for:
+
+• QA testing
+• TestFlight builds
+• integration testing
+
+---
+
+### develop
+
+Active development branch.
+
+All feature branches merge here first.
+
+---
+
+# 2. Supporting Branches
+
+## Feature Branch
+
+Used for building features.
+
+Naming rule:
+
+```
+feature/<ticket-number>-<short-description>
+```
+
+Example:
+
+```
+feature/LIN-12-fidel-lesson-screen
+feature/LIN-25-audio-pronunciation
+```
+
+---
+
+## Fix Branch
+
+For bugs found during development.
+
+```
+fix/<ticket-number>-<description>
+```
+
+Example:
+
+```
+fix/LIN-34-audio-playback-crash
+```
+
+---
+
+## Hotfix Branch
+
+For urgent production fixes.
+
+```
+hotfix/<issue>
+```
+
+Example:
+
+```
+hotfix/login-crash
+```
+
+Hotfix flow:
+
+```
+main → hotfix → main + staging
+```
+
+---
+
+# 3. Pull Request Rules
+
+All code must go through **Pull Requests (PRs)**.
+
+Rules:
+
+• Minimum **1 approval**
+• All CI checks must pass
+• Code review required
+
+PR checklist:
+
+```
+- Tests written
+- Code formatted
+- No warnings
+- Documentation updated
+```
+
+---
+
+# 4. Commit Message Standards
+
+Use **Conventional Commits**.
+
+Structure:
+
+```
+type(scope): description
+```
+
+Examples:
+
+```
+feat(lesson): add fidel alphabet lesson screen
+fix(audio): resolve playback delay
+refactor(progress): simplify progress tracking
+test(quiz): add unit tests for quiz logic
+```
+
+Commit types:
+
+| Type     | Purpose                  |
+| -------- | ------------------------ |
+| feat     | new feature              |
+| fix      | bug fix                  |
+| refactor | code restructuring       |
+| test     | testing                  |
+| docs     | documentation            |
+| perf     | performance improvements |
+
+---
+
+# 5. CI/CD Pipeline
+
+CI/CD automatically checks code quality and builds the app.
+
+Recommended tools:
+
+• GitHub Actions
+• Xcode Cloud
+• Fastlane
+
+CI pipeline steps:
+
+```
+1. Install dependencies
+2. Lint code
+3. Run unit tests
+4. Run UI tests
+5. Build app
+6. Performance checks
+```
+
+Deployment pipeline:
+
+```
+develop → internal build
+staging → TestFlight
+main → App Store
+```
+
+---
+
+# 6. Code Quality Rules
+
+Use automated tools.
+
+### Linter
+
+Recommended:
+
+SwiftLint
+
+Rules:
+
+• no unused imports
+• max line length
+• consistent naming
+
+---
+
+### Formatter
+
+SwiftFormat
+
+Ensures consistent formatting.
+
+---
+
+# 7. Architecture Rules
+
+Use **MVVM architecture**.
+
+Structure:
+
+```
+App
+ ├── Features
+ │    ├── Lessons
+ │    ├── Flashcards
+ │    ├── Quizzes
+ │
+ ├── Core
+ │    ├── Networking
+ │    ├── Storage
+ │    ├── Audio
+ │
+ ├── UI
+ │    ├── Components
+ │    ├── Theme
+ │
+ ├── Models
+ ├── ViewModels
+ ├── Views
+```
+
+---
+
+# 8. Code Standards
+
+General rules:
+
+• Functions under **40 lines**
+• One responsibility per class
+• Use dependency injection
+• Avoid global state
+
+Naming conventions:
+
+```
+PascalCase → Types
+camelCase → variables/functions
+UPPER_CASE → constants
+```
+
+Example:
+
+```
+LessonView
+lessonViewModel
+MAX_LESSONS
+```
+
+---
+
+# 9. Performance Rules
+
+Performance targets:
+
+App launch:
+
+```
+< 2 seconds
+```
+
+Memory usage:
+
+```
+< 150MB
+```
+
+Frame rate:
+
+```
+60 FPS UI animations
+```
+
+Rules:
+
+• lazy loading for lessons
+• cache audio locally
+• avoid blocking main thread
+
+---
+
+# 10. Testing Strategy
+
+Three levels of testing.
+
+## Unit Tests
+
+Test business logic.
+
+Example:
+
+```
+Quiz scoring
+Lesson progress
+Flashcard algorithm
+```
+
+Framework:
+
+XCTest
+
+---
+
+## UI Tests
+
+Automated interface testing.
+
+Example:
+
+```
+Lesson navigation
+Quiz interaction
+Flashcard flipping
+```
+
+---
+
+## Integration Tests
+
+Test combined systems.
+
+Example:
+
+```
+audio + lessons
+progress tracking
+```
+
+---
+
+# 11. Performance Testing
+
+Use:
+
+Xcode Instruments
+
+Monitor:
+
+• CPU usage
+• memory leaks
+• animation performance
+
+---
+
+# 12. Scrum Development Process
+
+Use **2-week sprints**.
+
+Sprint structure:
+
+```
+Planning
+Development
+Review
+Retrospective
+```
+
+---
+
+## Sprint Planning
+
+Tasks come from Linear issues.
+
+Example backlog:
+
+```
+LIN-12 Alphabet lesson UI
+LIN-13 Flashcard engine
+LIN-14 Audio system
+```
+
+Each task must include:
+
+• description
+• acceptance criteria
+• design references
+
+---
+
+# 13. Definition of Done
+
+A task is done when:
+
+```
+✓ Code implemented
+✓ Tests written
+✓ Code reviewed
+✓ CI passed
+✓ Documentation updated
+✓ Merged to develop
+```
+
+---
+
+# 14. Release Process
+
+Release flow:
+
+```
+feature → develop
+develop → staging
+staging → main
+main → App Store
+```
+
+Release steps:
+
+1. merge staging → main
+2. tag version
+
+Example:
+
+```
+v1.0.0
+```
+
+3. deploy to App Store
+
+---
+
+# 15. Security Rules
+
+Protect user data.
+
+Rules:
+
+• no secrets in repo
+• use secure storage
+• encrypt sensitive data
+
+Use:
+
+Keychain for tokens.
+
+---
+
+# 16. Documentation
+
+All major components must include:
+
+```
+README
+Architecture explanation
+Setup instructions
+```
+
+Docs should cover:
+
+• project setup
+• development workflow
+• deployment steps
+
+---
+
+# 17. Project Management
+
+Use Linear.
+
+Workflow states:
+
+```
+Backlog
+Planned
+In Progress
+Review
+Done
+```
+
+Issue template:
+
+```
+Title
+Description
+Acceptance criteria
+Technical notes
+```
+
+---
+
+# 18. Versioning Strategy
+
+Use **Semantic Versioning**.
+
+Structure:
+
+```
+MAJOR.MINOR.PATCH
+```
+
+Example:
+
+```
+1.0.0
+```
+
+Meaning:
+
+| Version | Meaning      |
+| ------- | ------------ |
+| 1.x.x   | new features |
+| x.1.x   | improvements |
+| x.x.1   | bug fixes    |
+
+---
+
+# 19. Cursor Development Rules
+
+Cursor should:
+
+• generate **modular SwiftUI code**
+• follow **MVVM architecture**
+• write **unit tests automatically**
+• respect **lint rules**
+
+Every generated file must include:
+
+```
+- documentation comments
+- testable logic
+```
+
+---
+
+# 20. Development Timeline (Example)
+
+Week 1–2
+
+```
+Project setup
+Alphabet data
+Lesson UI
+```
+
+Week 3–4
+
+```
+Flashcards
+Quiz system
+Audio playback
+```
+
+Week 5–6
+
+```
+Progress tracking
+Gamification
+Offline storage
+```
+
+Week 7–8
+
+```
+Testing
+Optimization
+TestFlight release
+```

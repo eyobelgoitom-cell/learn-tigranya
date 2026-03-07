@@ -1,0 +1,7 @@
+# Fastlane Appfile - App Store Connect configuration
+# Set these via environment variables in CI
+
+app_identifier("com.fidellearn.app")
+apple_id(ENV["APPLE_ID"] || "")
+team_id(ENV["TEAM_ID"] || "")
+team_name(ENV["TEAM_NAME"] || "")

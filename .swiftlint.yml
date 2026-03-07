@@ -1,0 +1,48 @@
+# SwiftLint Configuration for Fidel Learn
+# https://github.com/realm/SwiftLint
+
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+
+opt_in_rules:
+  - empty_count
+  - explicit_init
+  - first_where
+  - force_unwrapping
+  - modifier_order
+  - multiline_parameters
+  - overridden_super_call
+  - private_outlet
+  - redundant_nil_coalescing
+  - sorted_first_last
+  - toggle_bool
+  - unneeded_parentheses_in_closure_argument
+
+excluded:
+  - .build
+  - DerivedData
+  - Carthage
+  - Pods
+  - Tuist
+  - .tuist
+
+line_length:
+  warning: 120
+  error: 150
+  ignores_urls: true
+  ignores_comments: true
+
+type_body_length:
+  warning: 300
+  error: 400
+
+file_length:
+  warning: 500
+  error: 800
+
+function_body_length:
+  warning: 40
+  error: 60
+
+reporter: "xcode"

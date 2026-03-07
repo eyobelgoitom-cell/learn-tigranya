@@ -1,0 +1,26 @@
+# SwiftFormat Configuration for Fidel Learn
+# https://github.com/nicklockwood/SwiftFormat
+
+--swiftversion 5.9
+--indent 4
+--tabwidth 4
+--maxwidth 120
+--wraparguments before-first
+--wrapcollections before-first
+--trimwhitespace always
+--commas always
+--decimalgrouping 3
+--binarygrouping 4
+--octalgrouping 4
+--hexgrouping 4
+--exponentgrouping disabled
+--hexliteralcase lowercase
+--patternlet hoist
+--ranges spaced
+--self remove
+--header strip
+--ifdef no-indent
+--stripunusedargs closure-only
+--modifierorder override,private,fileprivate,internal,public,static
+--organizetypes struct,class,enum,extension,protocol
+--exclude .build,DerivedData,Carthage,Pods,Tuist,.tuist
