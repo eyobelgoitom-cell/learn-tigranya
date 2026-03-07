@@ -47,7 +47,7 @@ final class ProgressService: ProgressServiceProtocol {
     }
 
     func getWordsLearned() async -> Int {
-        guard await currentUserId() != nil else { return 0 }
+        guard let userId = await currentUserId() else { return 0 }
         do {
             let stats: [UserStats] = try await client
                 .from("user_stats")
@@ -78,7 +78,7 @@ final class ProgressService: ProgressServiceProtocol {
     }
 
     func getAccuracy() async -> Double {
-        guard await currentUserId() != nil else { return 0 }
+        guard let userId = await currentUserId() else { return 0 }
         do {
             let stats: [UserStats] = try await client
                 .from("user_stats")
