@@ -1,0 +1,35 @@
+---
+description: SwiftUI & iOS development standards for Fidel Learn
+globs: **/*.swift
+alwaysApply: false
+---
+
+# SwiftUI & iOS Development Rules
+
+## Architecture & Patterns
+
+- **Architecture:** Strictly follow MVVM (Model-View-ViewModel).
+- **State Management:** Use `@Observable` (iOS 17+) or `@StateObject` for ViewModels, and `@State`/`@Binding` for simple view state.
+- **Concurrency:** Prefer `async/await` and `Task` over completion handlers or Combine.
+
+## UI & Component Guidelines
+
+- **Components:** Always use native SwiftUI components (List, TabView, SF Symbols).
+- **Accessibility:** Every interactive element MUST have an `.accessibilityLabel()` and `.accessibilityHint()`.
+- **Performance:** Use `LazyVStack` or `LazyHStack` for lists with >20 items.
+- **Modifiers:** Extract complex styling into custom `ViewModifiers` to keep the body clean.
+
+## Coding Standards
+
+- **Safety:** Never use force-unwraps (`!`). Use `guard let` or `if let`.
+- **Naming:** Use `PascalCase` for Types and `lowerCamelCase` for variables/functions.
+- **Formatting:** Ensure all views have a `Preview` provider for Xcode.
+- **Clean Code:** Keep View bodies under 100 lines; extract subviews if they get too large.
+
+## 🗄️ Supabase & Database Rules
+- **Client Access**: Always use a shared `SupabaseClient` instance (e.g., `SupabaseManager.shared.client`).
+- **Data Models**: Use `Codable` structs that mirror your Postgres table schema. Use `CodingKeys` to map `snake_case` database columns to `camelCase` Swift properties.
+- **CRUD Operations**: Prefer `async/await` syntax for all Supabase calls (e.g., `try await client.from("table").select().execute()`).
+- **Realtime**: When using `.on()` listeners, ensure they are managed within a `Task` and properly cancelled in `onDisappear` to prevent memory leaks.
+- **Authentication**: Use `supabase.auth.session` to check login status. Always wrap auth changes in `@MainActor` to ensure UI updates happen on the main thread.
+- **Security**: Remind the AI to NEVER hardcode the `service_role` key. Only use the `anon` key for client-side operations and assume Row Level Security (RLS) is enabled.

@@ -8,6 +8,7 @@ struct FidelLearnApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(appState)
+                .environment(\.progressService, SyncProgressService(appState: appState))
         }
     }
 }

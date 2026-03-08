@@ -5,15 +5,13 @@ struct AlphabetLessonView: View {
     let lesson: Lesson
     @StateObject private var viewModel: AlphabetLessonViewModel
     @Environment(\.dismiss) private var dismiss
-    private let progressService: ProgressServiceProtocol
+    @Environment(\.progressService) private var progressService
 
     init(
         lesson: Lesson,
-        lessonService: LessonServiceProtocol = LocalLessonService(),
-        progressService: ProgressServiceProtocol = LocalProgressService()
+        lessonService: LessonServiceProtocol = LocalLessonService()
     ) {
         self.lesson = lesson
-        self.progressService = progressService
         _viewModel = StateObject(wrappedValue: AlphabetLessonViewModel(
             lessonId: lesson.id,
             lessonService: lessonService
@@ -79,7 +77,8 @@ struct AlphabetLessonView: View {
                 .padding(.vertical, 16)
         }
         .buttonStyle(.borderedProminent)
-        .padding(.top, 24)
+        .tint(FidelTheme.accent)
+        .padding(.top, FidelTheme.spaceL)
     }
 }
 
@@ -91,7 +90,7 @@ private struct FidelCharacterCell: View {
     var body: some View {
         VStack(spacing: 8) {
             Text(character.character)
-                .font(.system(size: 52, weight: .medium))
+                .font(FidelTheme.fidelFontCard)
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
             Text(character.transliteration)
@@ -105,16 +104,16 @@ private struct FidelCharacterCell: View {
             } label: {
                 Image(systemName: "play.circle.fill")
                     .font(.title2)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(FidelTheme.accent)
             }
             .buttonStyle(.plain)
         }
         .frame(minWidth: 64, minHeight: 100)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
+        .padding(.horizontal, FidelTheme.spaceL)
+        .padding(.vertical, FidelTheme.spaceM)
+        .background(FidelTheme.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: FidelTheme.radiusL))
+        .shadow(color: FidelTheme.cardShadow, radius: 4, x: 0, y: 2)
     }
 }
 
