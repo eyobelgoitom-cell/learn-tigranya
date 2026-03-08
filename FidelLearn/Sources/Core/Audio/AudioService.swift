@@ -5,16 +5,19 @@ import Foundation
 @MainActor
 protocol AudioServiceProtocol {
     func play(text: String) async
+    func play(url: URL?, completion: (() -> Void)?) async
     func stop()
 }
 
 /// TTS-based audio service. Speaks transliteration for Fidel characters and words.
 /// Uses AVSpeechSynthesizer — speaks Latin transliteration (e.g., "ha", "selam").
+/// Supports URL playback for native speaker audio when available.
 @MainActor
 final class AudioService: AudioServiceProtocol {
     static let shared = AudioService()
     private let synthesizer = AVSpeechSynthesizer()
     private var currentUtterance: AVSpeechUtterance?
+    private var currentPlayer: AVPlayer?
 
     private init() {}
 
@@ -28,8 +31,18 @@ final class AudioService: AudioServiceProtocol {
         synthesizer.speak(utterance)
     }
 
+    func play(url: URL?, completion: (() -> Void)? = nil) async {
+        guard let url else { return }
+        stop()
+        let player = AVPlayer(url: url)
+        currentPlayer = player
+        player.play()
+    }
+
     func stop() {
         synthesizer.stopSpeaking(at: .immediate)
         currentUtterance = nil
+        currentPlayer?.pause()
+        currentPlayer = nil
     }
 }

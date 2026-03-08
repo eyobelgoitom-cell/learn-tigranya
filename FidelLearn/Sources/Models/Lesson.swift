@@ -1,7 +1,7 @@
 import Foundation
 
 /// Lesson model (maps to lessons table).
-struct Lesson: Identifiable, Codable {
+struct Lesson: Identifiable, Codable, Hashable {
     let id: String
     let title: String
     let subtitle: String?
@@ -25,7 +25,7 @@ struct Lesson: Identifiable, Codable {
     }
 }
 
-enum LessonType: String, Codable {
+enum LessonType: String, Codable, Hashable {
     case alphabet
     case vocabulary
     case phrase

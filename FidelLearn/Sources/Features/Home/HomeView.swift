@@ -1,11 +1,14 @@
 import SwiftUI
 
 struct HomeView: View {
+    let progressService: SyncProgressService
     @Binding var selectedTab: RootTab
-    @StateObject private var viewModel = HomeViewModel()
+    @StateObject private var viewModel: HomeViewModel
 
-    init(selectedTab: Binding<RootTab> = .constant(.home)) {
+    init(progressService: SyncProgressService, selectedTab: Binding<RootTab> = .constant(.home)) {
+        self.progressService = progressService
         _selectedTab = selectedTab
+        _viewModel = StateObject(wrappedValue: HomeViewModel(progressService: progressService))
     }
 
     var body: some View {
@@ -82,5 +85,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(progressService: SyncProgressService(getIsAuthenticated: { false }))
 }

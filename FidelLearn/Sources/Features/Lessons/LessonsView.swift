@@ -9,9 +9,7 @@ struct LessonsView: View {
                 ForEach(viewModel.lessonSections) { section in
                     Section(section.title) {
                         ForEach(section.lessons) { lesson in
-                            NavigationLink {
-                                AlphabetLessonView(lesson: lesson)
-                            } label: {
+                            NavigationLink(value: lesson) {
                                 LessonRowView(lesson: lesson, progress: viewModel.progress(for: lesson.id))
                             }
                         }
@@ -20,6 +18,13 @@ struct LessonsView: View {
             }
             .navigationTitle("Lessons")
             .listStyle(.insetGrouped)
+            .navigationDestination(for: Lesson.self) { lesson in
+                if lesson.type == .vocabulary {
+                    VocabularyLessonView(lesson: lesson)
+                } else {
+                    AlphabetLessonView(lesson: lesson)
+                }
+            }
             .onAppear { viewModel.refreshProgress() }
         }
     }
