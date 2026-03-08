@@ -8,6 +8,7 @@ protocol ProgressServiceProtocol: Sendable {
     func getAccuracy() async -> Double
     func getAchievements() async -> [Achievement]
     func saveProgress(lessonId: String, completed: Bool, score: Double?) async
+    func getLessonProgress(lessonId: String) async -> LessonProgress?
 }
 
 final class ProgressService: ProgressServiceProtocol {
@@ -31,7 +32,7 @@ final class ProgressService: ProgressServiceProtocol {
     func getDailyProgress() async -> (completed: Int, goal: Int) {
         guard let userId = await currentUserId() else { return (0, 3) }
         do {
-            let today = ISO8601DateFormatter().string(from: Date()).prefix(10)
+            let today = String(ISO8601DateFormatter().string(from: Date()).prefix(10))
             let progress: [UserProgress] = try await client
                 .from("user_progress")
                 .select()
@@ -100,6 +101,28 @@ final class ProgressService: ProgressServiceProtocol {
             Achievement(id: "2", title: "7 Day Streak", description: "Learn for 7 days in a row", isUnlocked: false, unlockedAt: nil),
             Achievement(id: "3", title: "100 Words", description: "Learn 100 words", isUnlocked: false, unlockedAt: nil)
         ]
+    }
+
+    func getLessonProgress(lessonId: String) async -> LessonProgress? {
+        guard let userId = await currentUserId() else { return nil }
+        do {
+            let progress: [UserProgress] = try await client
+                .from("user_progress")
+                .select()
+                .eq("user_id", value: userId)
+                .eq("lesson_id", value: lessonId)
+                .execute()
+                .value
+            guard let p = progress.first, p.completed else { return nil }
+            return LessonProgress(
+                lessonId: p.lessonId,
+                isCompleted: p.completed,
+                score: p.score,
+                completedAt: p.completedAt
+            )
+        } catch {
+            return nil
+        }
     }
 
     func saveProgress(lessonId: String, completed: Bool, score: Double?) async {

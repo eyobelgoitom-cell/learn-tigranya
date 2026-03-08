@@ -1,10 +1,11 @@
 import Foundation
-import Combine
+@preconcurrency import Combine
+import Supabase
 
 /// Default auth service - uses Supabase when configured.
 /// Falls back to no session when Supabase URL is not configured (offline/dev).
-final class DefaultAuthService: AuthServiceProtocol {
-    private lazy var supabaseAuth = SupabaseAuthService()
+final class DefaultAuthService: AuthServiceProtocol, @unchecked Sendable {
+    private let supabaseAuth = SupabaseAuthService()
 
     var sessionPublisher: AnyPublisher<Session?, Never> {
         let url = ProcessInfo.processInfo.environment["SUPABASE_URL"] ?? ""

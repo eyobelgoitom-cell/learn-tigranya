@@ -13,7 +13,7 @@ final class HomeViewModel: ObservableObject {
     private let lessonService: LessonServiceProtocol
 
     init(
-        progressService: ProgressServiceProtocol = ProgressService(),
+        progressService: ProgressServiceProtocol = LocalProgressService(),
         lessonService: LessonServiceProtocol = LocalLessonService()
     ) {
         self.progressService = progressService
@@ -28,11 +28,17 @@ final class HomeViewModel: ObservableObject {
             lessonsCompletedToday = completed
             dailyGoal = goal
             dailyProgress = goal > 0 ? Double(completed) / Double(goal) : 0
-            nextLesson = await lessonService.getNextLesson()
+            nextLesson = await getNextIncompleteLesson()
         }
     }
 
-    func continueLesson() {
-        // Navigation handled by coordinator
+    private func getNextIncompleteLesson() async -> Lesson? {
+        let lessons = await lessonService.getLessons(language: "tigrinya")
+        for lesson in lessons where lesson.type == .alphabet {
+            if await progressService.getLessonProgress(lessonId: lesson.id) == nil {
+                return lesson
+            }
+        }
+        return lessons.first
     }
 }

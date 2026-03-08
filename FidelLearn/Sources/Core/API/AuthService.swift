@@ -1,5 +1,5 @@
 import Foundation
-import Combine
+@preconcurrency import Combine
 import Supabase
 
 protocol AuthServiceProtocol: Sendable {
@@ -9,17 +9,22 @@ protocol AuthServiceProtocol: Sendable {
     func signOut() async
 }
 
-final class SupabaseAuthService: AuthServiceProtocol {
+final class SupabaseAuthService: AuthServiceProtocol, @unchecked Sendable {
     private let client: SupabaseClient
+    private let sessionSubject = CurrentValueSubject<Session?, Never>(nil)
 
     var sessionPublisher: AnyPublisher<Session?, Never> {
-        client.auth.stateChange
-            .map(\.session)
-            .eraseToAnyPublisher()
+        sessionSubject.eraseToAnyPublisher()
     }
 
     init(client: SupabaseClient = SupabaseConfig.client) {
         self.client = client
+        Task { [weak self] in
+            guard let self else { return }
+            for await (_, session) in self.client.auth.authStateChanges {
+                self.sessionSubject.send(session)
+            }
+        }
     }
 
     func signIn(email: String, password: String) async throws {

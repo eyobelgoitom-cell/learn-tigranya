@@ -3,6 +3,8 @@
 **Last updated:** March 2025  
 **Target:** MVP (Tigrinya alphabet, 100 words, audio, flashcards, quizzes, progress)
 
+**UI/UX:** See [UI_UX_GUIDE.md](./UI_UX_GUIDE.md) — every screen must be stunning, premium, and user-friendly.
+
 ---
 
 ## Current State
@@ -12,15 +14,17 @@
 | App shell | ✅ Done | Tab nav: Home, Lessons, Practice, Progress, Settings |
 | Models | ✅ Done | Lesson, Word, FidelCharacter, UserProgress, Flashcard |
 | Supabase schema | ✅ Done | Migrations ready |
-| LessonService | ⚠️ Partial | Supabase + fallback; fallback has 1 lesson only |
-| ProgressService | ⚠️ Bugs | `userId` undefined in `getWordsLearned`, `getAccuracy` |
-| Lesson detail screen | ❌ Missing | Tapping lesson does nothing |
-| Fidel dataset | ❌ Missing | Need full 231 Tigrinya characters |
+| LocalLessonService | ✅ Done | Offline-first, 22 lessons, 154 Fidel chars |
+| ProgressService | ✅ Done | Bug fixes applied |
+| Lesson detail screen | ✅ Done | AlphabetLessonView with Fidel display |
+| Fidel dataset | ✅ Done | 154 chars (22 rows × 7 vowels) |
 | Vocabulary | ❌ Missing | Need 100 words |
-| Audio | ❌ Missing | No playback |
-| Flashcards | ❌ Placeholder | UI shell only |
-| Quizzes | ❌ Placeholder | UI shell only |
-| Offline | ❌ Missing | App depends on Supabase |
+| Audio | ✅ Done | TTS on each Fidel character |
+| Flashcards | ✅ Done | Card flip, Know it / Review later |
+| Quizzes | ✅ Done | Multiple choice |
+| Offline | ✅ Done | LocalLessonService primary |
+
+**See [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md) for full changelog.**
 
 ---
 
@@ -29,22 +33,22 @@
 **Goal:** Fix bugs, add offline-first data, full Fidel dataset.
 
 ### 1.1 Fix ProgressService
-- [ ] Fix `getWordsLearned()` — use `guard let userId = await currentUserId()`
-- [ ] Fix `getAccuracy()` — same fix
+- [x] Fix `getWordsLearned()` — use `guard let userId = await currentUserId()`
+- [x] Fix `getAccuracy()` — same fix
 
 ### 1.2 Local Data Layer
-- [ ] Create `LocalLessonService` implementing `LessonServiceProtocol`
-- [ ] Bundle JSON: `fidel_characters.json`, `lessons.json`, `words.json`
-- [ ] Use local service when offline or as primary for MVP
+- [x] Create `LocalLessonService` implementing `LessonServiceProtocol`
+- [x] Bundle JSON: `fidel_characters.json`, `lessons.json`, `words.json`
+- [x] Use local service when offline or as primary for MVP
 
 ### 1.3 Tigrinya Fidel Dataset
-- [ ] Create `fidel_characters.json` with all 231 characters
-- [ ] Structure: 33 consonant groups × 7 vowels (ሀ ሁ ሂ ሃ ሄ ህ ሆ)
-- [ ] Include: character, transliteration, vowel_order, consonant_group
+- [x] Create `fidel_characters.json` with 154 characters (22 rows × 7 vowels)
+- [x] Structure: 22 consonant groups × 7 vowels (ሀ ሁ ሂ ሃ ሄ ህ ሆ)
+- [x] Include: character, transliteration, vowel_order, consonant_group
 
 ### 1.4 Lesson Structure
-- [ ] Create `lessons.json` — 33 alphabet lessons (one per consonant row)
-- [ ] Lesson 1: ሀ ሁ ሂ ሃ ሄ ህ ሆ (ha, hu, hi, ha, he, hə, ho)
+- [x] Create `lessons.json` — 22 alphabet lessons (one per consonant row)
+- [x] Lesson 1: ሀ ሁ ሂ ሃ ሄ ህ ሆ (ha, hu, hi, ha, he, hə, ho)
 
 **Branch:** `feature/LIN-01-foundation-and-fidel-data`
 
@@ -55,14 +59,13 @@
 **Goal:** User can open a lesson and see Fidel characters.
 
 ### 2.1 Lesson Detail View
-- [ ] `AlphabetLessonView` — full-screen lesson
-- [ ] Display 7 characters per row (one vowel row)
-- [ ] Large Fidel typography (Noto Sans Ethiopic / Abyssinica SIL)
-- [ ] Transliteration below each character
+- [x] `AlphabetLessonView` — full-screen lesson
+- [x] Display 7 characters per row (one vowel row)
+- [x] Large Fidel typography (52pt)
+- [x] Transliteration below each character
 
 ### 2.2 Navigation
-- [ ] Wire `LessonsViewModel.selectedLesson` → `AlphabetLessonView`
-- [ ] Use `NavigationLink` or sheet based on lesson type
+- [x] Wire `NavigationLink` from LessonsView → AlphabetLessonView
 
 ### 2.3 Progress Integration
 - [ ] Load `progress(for: lessonId)` from ProgressService
@@ -77,16 +80,16 @@
 **Goal:** Play pronunciation for letters and words.
 
 ### 3.1 Audio Service
-- [ ] `AudioService` protocol + `AVAudioPlayer` implementation
-- [ ] Support: play, stop, slow/normal speed
+- [x] `AudioService` protocol + TTS (AVSpeechSynthesizer)
+- [x] Support: play, stop
 
 ### 3.2 Audio Sources
-- [ ] Option A: Bundle MP3 files per character/word
-- [ ] Option B: TTS fallback (AVSpeechSynthesizer) for MVP
-- [ ] Option C: Supabase Storage URLs (requires network)
+- [x] TTS fallback (AVSpeechSynthesizer) for MVP
+- [ ] Option A: Bundle MP3 files (future)
+- [ ] Option C: Supabase Storage URLs (future)
 
 ### 3.3 UI Integration
-- [ ] Play button on each Fidel character in lesson
+- [x] Play button on each Fidel character in lesson
 - [ ] Play button on flashcards and quiz items
 
 **Branch:** `feature/LIN-03-audio-pronunciation`
@@ -98,17 +101,17 @@
 **Goal:** Spaced repetition flashcards for letters and words.
 
 ### 4.1 Flashcard Engine
-- [ ] `FlashcardSession` — manages deck, flip, next
-- [ ] Support both FidelCharacter and Word cards
-- [ ] "Know it" / "Review later" actions
+- [x] `FlashcardSession` — manages deck, flip, next
+- [x] Support FidelCharacter cards
+- [x] "Know it" / "Review later" actions
 
 ### 4.2 Flashcard UI
-- [ ] Card flip animation
-- [ ] Front: Fidel character/word
-- [ ] Back: transliteration, translation, example
+- [x] Card flip animation (3D rotation)
+- [x] Front: Fidel character
+- [x] Back: transliteration, play button
 
 ### 4.3 Spaced Repetition (Optional for MVP)
-- [ ] Simple: "repeat later" = back of queue
+- [x] Simple: "Review later" = back of queue
 - [ ] Full SM-2: defer to Phase 5+
 
 **Branch:** `feature/LIN-04-flashcards`
@@ -120,18 +123,18 @@
 **Goal:** Multiple choice, match, and listening quizzes.
 
 ### 5.1 Quiz Types
-- [ ] **Multiple choice:** "What sound is ሀ?" → A) ha B) sa C) ka
-- [ ] **Match:** Sound → letter
-- [ ] **Listening:** Play audio → choose letter
+- [x] **Multiple choice:** "What sound is ሀ?" → 4 options
+- [ ] **Match:** Sound → letter (deferred)
+- [ ] **Listening:** Play audio → choose letter (deferred)
 
 ### 5.2 Quiz Engine
-- [ ] `QuizSession` — questions, scoring, completion
-- [ ] Pull from lesson's Fidel characters/words
+- [x] `QuizSession` — questions, scoring, completion
+- [x] Pull from Fidel characters
 
 ### 5.3 Quiz UI
-- [ ] Question display
-- [ ] Answer buttons with feedback (correct/incorrect)
-- [ ] Score and "Try again" / "Next"
+- [x] Question display
+- [x] Answer buttons with feedback (correct/incorrect)
+- [x] Score and "Try again" / "Next"
 
 **Branch:** `feature/LIN-05-quizzes`
 
@@ -181,7 +184,4 @@
 
 ## Next Steps
 
-1. Checkout `develop`
-2. Create `feature/LIN-01-foundation-and-fidel-data`
-3. Fix ProgressService bugs
-4. Add local data layer + Fidel JSON
+1. Sprint 6: Vocabulary (100 words), polish, TestFlight

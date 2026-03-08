@@ -16,38 +16,46 @@ learn tigraynya/
 │   │   │   ├── API/           # Supabase client, services
 │   │   │   │   ├── SupabaseClient.swift
 │   │   │   │   ├── AuthService.swift
+│   │   │   │   ├── DefaultAuthService.swift
 │   │   │   │   ├── LessonService.swift
+│   │   │   │   ├── LocalLessonService.swift   # Offline-first (Sprint 1)
 │   │   │   │   └── ProgressService.swift
+│   │   │   ├── Audio/         # Pronunciation (Sprint 3)
+│   │   │   │   └── AudioService.swift
 │   │   │   └── Navigation/
 │   │   │       └── RootView.swift
 │   │   ├── Features/          # Feature modules
 │   │   │   ├── Home/
-│   │   │   ├── Lessons/
+│   │   │   ├── Lessons/       # AlphabetLessonView (Sprint 2)
+│   │   │   │   ├── AlphabetLessonView.swift
+│   │   │   │   ├── AlphabetLessonViewModel.swift
+│   │   │   │   ├── LessonsView.swift
+│   │   │   │   └── LessonsViewModel.swift
 │   │   │   ├── Practice/
 │   │   │   ├── Progress/
 │   │   │   └── Settings/
-│   │   ├── Models/            # Data models
-│   │   │   ├── User.swift
-│   │   │   ├── Lesson.swift
-│   │   │   ├── Word.swift
-│   │   │   ├── Flashcard.swift
-│   │   │   ├── UserProgress.swift
-│   │   │   └── FidelCharacter.swift
-│   │   └── UI/                # Reusable UI components
-│   │       └── Components/
-│   │           └── CardView.swift
+│   │   ├── Models/
+│   │   └── UI/Components/
 │   └── Resources/
-│       └── Assets.xcassets
+│       ├── Assets.xcassets
+│       └── Data/              # Bundled JSON (Sprint 1)
+│           ├── fidel_characters.json
+│           ├── lessons.json
+│           └── words.json
 ├── FidelLearnTests/
-│   └── Sources/
 ├── FidelLearnUITests/
-│   └── Sources/
 ├── supabase/
-│   ├── migrations/            # Database schema
-│   └── config.toml
 ├── fastlane/
 ├── .github/workflows/
 └── docs/
+    ├── DEVELOPMENT_LOG.md     # Full changelog
+    ├── DEVELOPMENT_PLAN.md
+    ├── PROJECT_STRUCTURE.md
+    ├── UI_UX_GUIDE.md
+    └── sprints/
+        ├── SPRINT_01.md
+        ├── SPRINT_02.md
+        └── SPRINT_03.md
 ```
 
 ## Architecture (MVVM)
@@ -59,9 +67,11 @@ learn tigraynya/
 
 ## Data Flow
 
-1. **Supabase** → API layer (LessonService, ProgressService, AuthService)
-2. **Services** → ViewModels (injected via init)
-3. **ViewModels** → Views (via `@StateObject`)
+1. **LocalLessonService** (primary) → bundled JSON, offline-first
+2. **LessonService** (Supabase) → fallback when online
+3. **AudioService** → TTS for Fidel pronunciation
+4. **Services** → ViewModels (injected via init)
+5. **ViewModels** → Views (via `@StateObject`)
 
 ## Key Conventions
 

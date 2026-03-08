@@ -20,5 +20,10 @@
   {"id":"lesson-19","title":"ጸ ጹ ጺ ጻ ጼ ጽ ጾ","subtitle":"Emphatic S (ṣ) — ṣa, ṣu, ṣi, ṣa, ṣe, ṣə, ṣo","type":"alphabet","order":18,"section_id":"alphabet","language":"tigrinya"},
   {"id":"lesson-20","title":"ፀ ፁ ፂ ፃ ፄ ፅ ፆ","subtitle":"Emphatic Ṣ — tsa, tsu, tsi, tsa, tse, tsə, tso","type":"alphabet","order":19,"section_id":"alphabet","language":"tigrinya"},
   {"id":"lesson-21","title":"ፈ ፉ ፊ ፋ ፌ ፍ ፎ","subtitle":"F sound — fa, fu, fi, fa, fe, fə, fo","type":"alphabet","order":20,"section_id":"alphabet","language":"tigrinya"},
-  {"id":"lesson-22","title":"ፐ ፑ ፒ ፓ ፔ ፕ ፖ","subtitle":"P sound — pa, pu, pi, pa, pe, pə, po","type":"alphabet","order":21,"section_id":"alphabet","language":"tigrinya"}
+  {"id":"lesson-22","title":"ፐ ፑ ፒ ፓ ፔ ፕ ፖ","subtitle":"P sound — pa, pu, pi, pa, pe, pə, po","type":"alphabet","order":21,"section_id":"alphabet","language":"tigrinya"},
+  {"id":"vocab-1","title":"Greetings & Basics","subtitle":"ሰላም, እንታይ, ኣበይ — Hello, what, where","type":"vocabulary","order":22,"section_id":"vocabulary","language":"tigrinya"},
+  {"id":"vocab-2","title":"Family & People","subtitle":"ኣደ, ኣቦ, ልቢ — Mother, father, heart","type":"vocabulary","order":23,"section_id":"vocabulary","language":"tigrinya"},
+  {"id":"vocab-3","title":"Numbers & Quantities","subtitle":"ሓደ, ክልተ, ሰለስተ — One, two, three","type":"vocabulary","order":24,"section_id":"vocabulary","language":"tigrinya"},
+  {"id":"vocab-4","title":"Body & Nature","subtitle":"ዓይኒ, ኢድ, ማይ — Eye, hand, water","type":"vocabulary","order":25,"section_id":"vocabulary","language":"tigrinya"},
+  {"id":"vocab-5","title":"Actions & Common Verbs","subtitle":"ግበር, ኪድ, ብላ — Do, go, eat","type":"vocabulary","order":26,"section_id":"vocabulary","language":"tigrinya"}
 ]

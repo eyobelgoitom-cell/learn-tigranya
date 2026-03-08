@@ -2,35 +2,35 @@ import SwiftUI
 
 /// Root navigation container with tab-based layout.
 struct RootView: View {
-    @State private var selectedTab: Tab = .home
+    @State private var selectedTab: RootTab = .home
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeView()
+            HomeView(selectedTab: $selectedTab)
                 .tabItem { Label("Home", systemImage: "house.fill") }
-                .tag(Tab.home)
+                .tag(RootTab.home)
 
             LessonsView()
                 .tabItem { Label("Lessons", systemImage: "book.fill") }
-                .tag(Tab.lessons)
+                .tag(RootTab.lessons)
 
             PracticeView()
                 .tabItem { Label("Practice", systemImage: "brain.head.profile") }
-                .tag(Tab.practice)
+                .tag(RootTab.practice)
 
             UserProgressView()
                 .tabItem { Label("Progress", systemImage: "chart.bar.fill") }
-                .tag(Tab.progress)
+                .tag(RootTab.progress)
 
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape.fill") }
-                .tag(Tab.settings)
+                .tag(RootTab.settings)
         }
         .tint(.accentColor)
     }
 }
 
-private enum Tab: Hashable {
+enum RootTab: Hashable {
     case home, lessons, practice, progress, settings
 }
 

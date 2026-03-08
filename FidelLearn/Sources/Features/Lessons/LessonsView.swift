@@ -9,16 +9,18 @@ struct LessonsView: View {
                 ForEach(viewModel.lessonSections) { section in
                     Section(section.title) {
                         ForEach(section.lessons) { lesson in
-                            LessonRowView(lesson: lesson, progress: viewModel.progress(for: lesson.id))
-                                .onTapGesture {
-                                    viewModel.selectLesson(lesson)
-                                }
+                            NavigationLink {
+                                AlphabetLessonView(lesson: lesson)
+                            } label: {
+                                LessonRowView(lesson: lesson, progress: viewModel.progress(for: lesson.id))
+                            }
                         }
                     }
                 }
             }
             .navigationTitle("Lessons")
             .listStyle(.insetGrouped)
+            .onAppear { viewModel.refreshProgress() }
         }
     }
 }

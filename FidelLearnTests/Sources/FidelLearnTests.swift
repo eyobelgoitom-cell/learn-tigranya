@@ -22,4 +22,22 @@ final class FidelLearnTests: XCTestCase {
         XCTAssertEqual(characters.first?.character, "ሀ")
         XCTAssertEqual(characters.first?.transliteration, "ha")
     }
+
+    @MainActor
+    func testQuizSession_loadsQuestionsAndScores() async throws {
+        let service = LocalLessonService(bundle: Bundle(for: Self.self))
+        var allCharacters: [FidelCharacter] = []
+        let lessons = await service.getLessons(language: "tigrinya")
+        for lesson in lessons where lesson.type == .alphabet {
+            let chars = await service.getFidelCharacters(lessonId: lesson.id)
+            allCharacters.append(contentsOf: chars)
+        }
+        let session = QuizSession()
+        session.loadQuestions(from: allCharacters, count: 5)
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(session.score, 0)
+        guard let question = session.currentQuestion else { return }
+        session.selectAnswer(question.correctAnswer)
+        XCTAssertEqual(session.score, 1)
+    }
 }

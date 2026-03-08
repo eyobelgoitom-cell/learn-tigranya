@@ -2,6 +2,8 @@
 
 A modern native iOS app for learning Tigrinya and Amharic through the Ge'ez (Fidel) script, vocabulary, pronunciation, and phrases.
 
+**Development progress:** See [docs/DEVELOPMENT_LOG.md](docs/DEVELOPMENT_LOG.md) for full changelog (Sprints 1–5 complete).
+
 ## Tech Stack
 
 - **Platform:** Native iOS (Swift 5.9+, SwiftUI)

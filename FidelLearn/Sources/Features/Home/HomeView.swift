@@ -1,7 +1,12 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Binding var selectedTab: RootTab
     @StateObject private var viewModel = HomeViewModel()
+
+    init(selectedTab: Binding<RootTab> = .constant(.home)) {
+        _selectedTab = selectedTab
+    }
 
     var body: some View {
         NavigationStack {
@@ -61,7 +66,7 @@ struct HomeView: View {
                     Text(lesson.title)
                         .font(.subheadline)
                     Button("Continue") {
-                        viewModel.continueLesson()
+                        selectedTab = .lessons
                     }
                     .buttonStyle(.borderedProminent)
                 } else {

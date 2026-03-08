@@ -30,20 +30,6 @@ struct PracticeView: View {
     }
 }
 
-struct FlashcardPracticeView: View {
-    var body: some View {
-        Text("Flashcards")
-            .navigationTitle("Flashcards")
-    }
-}
-
-struct QuizPracticeView: View {
-    var body: some View {
-        Text("Quizzes")
-            .navigationTitle("Quizzes")
-    }
-}
-
 struct PronunciationPracticeView: View {
     var body: some View {
         Text("Pronunciation")

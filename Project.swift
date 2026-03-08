@@ -3,11 +3,6 @@ import ProjectDescription
 let project = Project(
     name: "FidelLearn",
     organizationName: "FidelLearn",
-    options: .options(
-        automaticSchemesOrdering: true,
-        disableBundleAccessors: false,
-        disableSynthesizedResourceAccessors: false
-    ),
     packages: [
         .package(url: "https://github.com/supabase/supabase-swift", from: "2.10.0"),
     ],

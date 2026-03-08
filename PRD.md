@@ -316,13 +316,19 @@ Options:
 
 # 8. Design Requirements
 
-Design principles:
+## UI/UX Mandate: Stunning, Premium, User-Friendly
 
-• clean interface
-• minimal distractions
-• large readable Fidel text
+Every screen must feel **polished, delightful, and intuitive**. The app should evoke the quality of top-tier language apps (Duolingo, Babbel) while honoring Tigrinya/Amharic culture.
 
-Typography:
+### Design Principles
+
+• **Stunning premium aesthetic** — Refined visuals, thoughtful spacing, cohesive color system
+• **Clean interface** — Minimal distractions, clear hierarchy, purposeful layout
+• **User-friendly UX** — Obvious actions, forgiving interactions, helpful feedback
+• **Large readable Fidel text** — Ge'ez script must be prominent and legible
+• **Delightful micro-interactions** — Subtle animations, satisfying feedback, smooth transitions
+
+### Typography
 
 Fidel characters must be **large and clear**.
 
@@ -330,6 +336,23 @@ Recommended fonts:
 
 • Noto Sans Ethiopic
 • Abyssinica SIL
+
+### Visual Standards
+
+| Element | Guideline |
+|---------|-----------|
+| **Spacing** | Generous padding, consistent 8pt grid |
+| **Colors** | Cohesive palette, accessible contrast, dark mode support |
+| **Cards** | Rounded corners, subtle shadows, clear hierarchy |
+| **Buttons** | Clear affordance, adequate touch targets (44pt min) |
+| **Feedback** | Immediate response to taps, loading states, success/error states |
+
+### UX Principles
+
+• **Progressive disclosure** — Show what's needed now; reveal more on demand
+• **Forgiveness** — Easy undo, clear confirmation for destructive actions
+• **Accessibility** — VoiceOver, Dynamic Type, sufficient contrast
+• **Consistency** — Same patterns across tabs; predictable navigation
 
 ---
 
