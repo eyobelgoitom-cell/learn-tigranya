@@ -67,3 +67,4 @@ Thumbs.db
 # Test
 TestResults.xcresult
 coverage/
+.package.resolved
