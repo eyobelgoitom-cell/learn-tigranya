@@ -6,7 +6,7 @@ struct FidelLearnApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            AppContentView()
                 .environmentObject(appState)
                 .environment(\.progressService, SyncProgressService(appState: appState))
                 .overlay {

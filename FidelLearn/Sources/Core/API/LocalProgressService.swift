@@ -4,13 +4,15 @@ import Foundation
 /// Sync to Supabase when online (future enhancement).
 final class LocalProgressService: ProgressServiceProtocol, @unchecked Sendable {
     private let defaults: UserDefaults
+    private let lessonService: LessonServiceProtocol
     private let completedKey = "fidel_learn_completed_lessons"
     private let dailyCompletedKey = "fidel_learn_daily_completed"
     private let lastActivityKey = "fidel_learn_last_activity"
     private let quizStatsKey = "fidel_learn_quiz_stats"
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = .standard, lessonService: LessonServiceProtocol = LocalLessonService()) {
         self.defaults = defaults
+        self.lessonService = lessonService
     }
 
     func getStreak() async -> Int {
@@ -30,8 +32,13 @@ final class LocalProgressService: ProgressServiceProtocol, @unchecked Sendable {
     }
 
     func getWordsLearned() async -> Int {
-        // Vocabulary not yet implemented; return 0
-        0
+        let completed = completedLessonIds.filter { $0.hasPrefix("lesson-voc-") }
+        var total = 0
+        for lessonId in completed {
+            let words = await lessonService.getWords(lessonId: lessonId)
+            total += words.count
+        }
+        return total
     }
 
     func getLessonsCompleted() async -> Int {
@@ -47,6 +54,7 @@ final class LocalProgressService: ProgressServiceProtocol, @unchecked Sendable {
     func getAchievements() async -> [Achievement] {
         let completed = completedLessonIds.count
         let streak = await getStreak()
+        let wordsLearned = await getWordsLearned()
         return [
             Achievement(
                 id: "1",
@@ -66,7 +74,7 @@ final class LocalProgressService: ProgressServiceProtocol, @unchecked Sendable {
                 id: "3",
                 title: "100 Words",
                 description: "Learn 100 words",
-                isUnlocked: false,
+                isUnlocked: wordsLearned >= 100,
                 unlockedAt: nil
             )
         ]

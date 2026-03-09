@@ -70,4 +70,38 @@ final class FidelLearnTests: XCTestCase {
         XCTAssertNotNil(vocabularySection)
         XCTAssertGreaterThanOrEqual(vocabularySection?.lessons.count ?? 0, 10)
     }
+
+    @MainActor
+    func testWordQuizSession_loadsQuestionsAndScores() async throws {
+        let service = LocalLessonService(bundle: Bundle(for: Self.self))
+        var allWords: [Word] = []
+        let lessons = await service.getLessons(language: "tigrinya")
+        for lesson in lessons where lesson.type == .vocabulary {
+            let words = await service.getWords(lessonId: lesson.id)
+            allWords.append(contentsOf: words)
+        }
+        let session = WordQuizSession()
+        session.loadQuestions(from: allWords, count: 5)
+        XCTAssertEqual(session.questions.count, 5)
+        XCTAssertEqual(session.score, 0)
+        guard let question = session.currentQuestion else { return }
+        session.selectAnswer(question.correctAnswer)
+        XCTAssertEqual(session.score, 1)
+    }
+
+    func testLocalProgressService_getWordsLearned() async throws {
+        let suiteName = "test_words_\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let lessonService = LocalLessonService(bundle: Bundle(for: Self.self))
+        let progressService = LocalProgressService(defaults: defaults, lessonService: lessonService)
+
+        var wordsLearned = await progressService.getWordsLearned()
+        XCTAssertEqual(wordsLearned, 0)
+
+        await progressService.saveProgress(lessonId: "lesson-voc-1", completed: true, score: nil)
+        let wordsInLesson1 = await lessonService.getWords(lessonId: "lesson-voc-1")
+        wordsLearned = await progressService.getWordsLearned()
+        XCTAssertEqual(wordsLearned, wordsInLesson1.count)
+    }
 }

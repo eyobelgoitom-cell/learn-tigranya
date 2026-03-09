@@ -12,11 +12,16 @@ enum AudioSpeed: String, CaseIterable {
     case fast
 }
 
+enum ColorSchemeOption: String, CaseIterable {
+    case system = "System"
+    case light = "Light"
+    case dark = "Dark"
+}
+
 @MainActor
 final class SettingsViewModel: ObservableObject {
     @Published var selectedLanguage: LearningLanguage = .tigrinya
     @Published var audioSpeed: AudioSpeed = .normal
-    @Published var isDarkMode = false
     @Published var showSignIn = false
 
     func clearCache() {

@@ -48,6 +48,12 @@ Open `FidelLearn.xcodeproj` in Xcode. Swift Package Manager will resolve depende
    - `SUPABASE_URL` - Your Supabase project URL
    - `SUPABASE_ANON_KEY` - Your Supabase anon key
 
+4. **Demo user** (optional): Run `supabase db reset` (local) or execute `supabase/seed.sql` in the SQL Editor (hosted) to create:
+   - **Email:** demo@fidellearn.com
+   - **Password:** demo123456
+
+   Then use "Sign in as Demo" in the app.
+
 ### 5. Run the App
 
 ```bash

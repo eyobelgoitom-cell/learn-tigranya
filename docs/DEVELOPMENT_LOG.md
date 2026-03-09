@@ -262,6 +262,13 @@ FidelLearn/Sources/Features/Practice/
 | **Quiz stats** | `recordQuizAttempt` persists accuracy; Progress tab reflects quiz performance |
 | **Next lesson** | Home includes vocabulary lessons in "Continue Learning" |
 | **Lessons UX** | Loading state, empty state, bundle path fallback for JSON resources |
+| **Vocabulary flashcards** | `WordFlashcardSession`, `WordFlashcardView`; mode picker Alphabet/Vocabulary |
+| **Vocabulary quiz** | `WordQuizSession`, `WordQuizQuestion`; word → translation MC; mode picker |
+
+### Files Created
+
+- `WordFlashcardSession.swift` — vocabulary deck, flip, Know it / Review later
+- `WordQuizSession.swift` — vocabulary MC quiz (word → translation)
 
 ### Files Modified
 

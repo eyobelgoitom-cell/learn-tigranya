@@ -33,6 +33,14 @@ final class AppState: ObservableObject {
             .store(in: &cancellables)
     }
 
+    func signIn(email: String, password: String) async throws {
+        try await authService.signIn(email: email, password: password)
+    }
+
+    func signUp(email: String, password: String) async throws {
+        try await authService.signUp(email: email, password: password)
+    }
+
     func signOut() async {
         await authService.signOut()
     }

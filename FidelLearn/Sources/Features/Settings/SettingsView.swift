@@ -3,6 +3,8 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @EnvironmentObject var appState: AppState
+    @AppStorage("colorScheme") private var colorSchemeRaw = ColorSchemeOption.system.rawValue
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = true
 
     var body: some View {
         NavigationStack {
@@ -37,17 +39,28 @@ struct SettingsView: View {
                 }
 
                 Section("Appearance") {
-                    Toggle("Dark Mode", isOn: $viewModel.isDarkMode)
+                    Picker("Color Scheme", selection: $colorSchemeRaw) {
+                        ForEach(ColorSchemeOption.allCases, id: \.rawValue) { option in
+                            Text(option.rawValue).tag(option.rawValue)
+                        }
+                    }
                 }
 
                 Section("Data") {
                     Button("Clear Cache") {
                         viewModel.clearCache()
                     }
+                    Button("Show Welcome Again") {
+                        hasCompletedOnboarding = false
+                    }
                 }
             }
             .navigationTitle("Settings")
             .listStyle(.insetGrouped)
+            .sheet(isPresented: $viewModel.showSignIn) {
+                AuthView()
+                    .environmentObject(appState)
+            }
         }
     }
 }

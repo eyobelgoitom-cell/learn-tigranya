@@ -18,10 +18,10 @@
 | ProgressService | ✅ Done | Bug fixes applied |
 | Lesson detail screen | ✅ Done | AlphabetLessonView with Fidel display |
 | Fidel dataset | ✅ Done | 154 chars (22 rows × 7 vowels) |
-| Vocabulary | ❌ Missing | Need 100 words |
+| Vocabulary | ✅ Done | 100 words in 10 lessons |
 | Audio | ✅ Done | TTS on each Fidel character |
-| Flashcards | ✅ Done | Card flip, Know it / Review later |
-| Quizzes | ✅ Done | Multiple choice |
+| Flashcards | ✅ Done | Alphabet + vocabulary modes, flip, Know it / Review later |
+| Quizzes | ✅ Done | Alphabet + vocabulary MC (sound/word → translation) |
 | Offline | ✅ Done | LocalLessonService primary |
 
 **See [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md) for full changelog.**
@@ -102,13 +102,15 @@
 
 ### 4.1 Flashcard Engine
 - [x] `FlashcardSession` — manages deck, flip, next
-- [x] Support FidelCharacter cards
+- [x] `WordFlashcardSession` — vocabulary deck
+- [x] Support FidelCharacter and Word cards
 - [x] "Know it" / "Review later" actions
 
 ### 4.2 Flashcard UI
 - [x] Card flip animation (3D rotation)
-- [x] Front: Fidel character
-- [x] Back: transliteration, play button
+- [x] Mode picker: Alphabet / Vocabulary
+- [x] Front: Fidel character or word
+- [x] Back: transliteration, translation (words), play button
 
 ### 4.3 Spaced Repetition (Optional for MVP)
 - [x] Simple: "Review later" = back of queue
@@ -123,15 +125,18 @@
 **Goal:** Multiple choice, match, and listening quizzes.
 
 ### 5.1 Quiz Types
-- [x] **Multiple choice:** "What sound is ሀ?" → 4 options
+- [x] **Multiple choice (alphabet):** "What sound is ሀ?" → 4 options
+- [x] **Multiple choice (vocabulary):** "What does ሰላም mean?" → 4 options
 - [ ] **Match:** Sound → letter (deferred)
 - [ ] **Listening:** Play audio → choose letter (deferred)
 
 ### 5.2 Quiz Engine
-- [x] `QuizSession` — questions, scoring, completion
-- [x] Pull from Fidel characters
+- [x] `QuizSession` — alphabet questions, scoring, completion
+- [x] `WordQuizSession` — vocabulary questions (word → translation)
+- [x] Pull from Fidel characters and words
 
 ### 5.3 Quiz UI
+- [x] Mode picker: Alphabet / Vocabulary
 - [x] Question display
 - [x] Answer buttons with feedback (correct/incorrect)
 - [x] Score and "Try again" / "Next"
@@ -145,12 +150,13 @@
 **Goal:** 100 words, offline support, TestFlight-ready.
 
 ### 6.1 Vocabulary
-- [ ] Create `words.json` with 100 Tigrinya words
-- [ ] Group by lessons (e.g., greetings, family, numbers)
+- [x] Create `words.json` with 100 Tigrinya words
+- [x] Group by lessons (10 lessons: greetings, family, numbers, etc.)
+- [x] VocabularyLessonView, flashcards, quiz, pronunciation practice
 
 ### 6.2 Offline-First
-- [ ] Default to `LocalLessonService`
-- [ ] Sync progress to Supabase when online (optional)
+- [x] Default to `LocalLessonService`
+- [x] Sync progress to Supabase when online (SyncProgressService)
 
 ### 6.3 Polish
 - [ ] Add Ethiopic fonts to project
@@ -184,4 +190,4 @@
 
 ## Next Steps
 
-1. Sprint 6: Vocabulary (100 words), polish, TestFlight
+1. Sprint 6 polish: Ethiopic fonts, dark mode, app icon, TestFlight

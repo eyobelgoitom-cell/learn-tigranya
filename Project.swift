@@ -6,6 +6,10 @@ let project = Project(
     packages: [
         .package(url: "https://github.com/supabase/supabase-swift", from: "2.10.0"),
     ],
+    settings: .settings(configurations: [
+        .debug(name: "Debug", xcconfig: "Config.xcconfig"),
+        .release(name: "Release", xcconfig: "Config.xcconfig"),
+    ]),
     targets: [
         .target(
             name: "FidelLearn",
@@ -61,7 +65,16 @@ let project = Project(
                 ["FidelLearnTests", "FidelLearnUITests"],
                 configuration: .debug
             ),
-            runAction: .runAction(configuration: .debug)
+            runAction: .runAction(
+                configuration: .debug,
+                arguments: .arguments(
+                    environmentVariables: [
+                        "SUPABASE_URL": EnvironmentVariable(stringLiteral: "$(SUPABASE_URL)"),
+                        "SUPABASE_ANON_KEY": EnvironmentVariable(stringLiteral: "$(SUPABASE_ANON_KEY)"),
+                    ]
+                ),
+                expandVariableFromTarget: "FidelLearn"
+            )
         ),
     ]
 )

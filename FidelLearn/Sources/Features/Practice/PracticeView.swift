@@ -31,12 +31,6 @@ struct PracticeView: View {
     }
 }
 
-struct PronunciationPracticeView: View {
-    var body: some View {
-        Text("Pronunciation")
-            .navigationTitle("Pronunciation")
-    }
-}
 
 #Preview {
     PracticeView()
