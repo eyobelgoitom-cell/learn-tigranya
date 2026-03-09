@@ -60,3 +60,12 @@ enum FidelTheme {
         return Font.system(size: size, weight: .medium)
     }
 }
+
+// MARK: - Layout Helpers (native feel)
+
+extension View {
+    /// Square frame — `.square(56)` instead of `.frame(width: 56, height: 56)`.
+    func square(_ size: CGFloat) -> some View {
+        frame(width: size, height: size)
+    }
+}

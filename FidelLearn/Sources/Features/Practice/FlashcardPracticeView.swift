@@ -173,7 +173,7 @@ struct FlashcardPracticeView: View {
             ZStack {
                 Circle()
                     .fill(FidelTheme.success.opacity(0.2))
-                    .frame(width: 96, height: 96)
+                    .square(96)
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 64))
                     .foregroundStyle(FidelTheme.success)
@@ -206,7 +206,7 @@ struct FlashcardPracticeView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                     .fill(FidelTheme.accent.opacity(0.1))
-                    .frame(width: 80, height: 80)
+                    .square(80)
                 Image(systemName: "rectangle.stack.fill")
                     .font(.system(size: 40))
                     .foregroundStyle(FidelTheme.accent)

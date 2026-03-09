@@ -108,7 +108,7 @@ struct SettingsView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: FidelTheme.radiusM)
                     .fill(FidelTheme.accent.opacity(0.15))
-                    .frame(width: 52, height: 52)
+                    .square(52)
                 Text("ሀ")
                     .font(.system(size: 28, weight: .medium))
                     .foregroundStyle(FidelTheme.accent)

@@ -26,7 +26,7 @@ struct PronunciationPracticeView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                     .fill(FidelTheme.accent.opacity(0.1))
-                    .frame(width: 80, height: 80)
+                    .square(80)
                 Image(systemName: "waveform.circle.fill")
                     .font(.system(size: 40))
                     .foregroundStyle(FidelTheme.accent)
@@ -47,6 +47,7 @@ struct PronunciationPracticeView: View {
             LazyVStack(spacing: FidelTheme.spaceM) {
                 ForEach(viewModel.words) { word in
                     PronunciationWordRow(word: word)
+                        .id(word.id)
                 }
             }
             .padding(FidelTheme.spaceL)

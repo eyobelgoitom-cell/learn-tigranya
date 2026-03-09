@@ -43,11 +43,11 @@ struct UserProgressView: View {
             ZStack {
                 Circle()
                     .stroke(Color(.tertiarySystemFill), lineWidth: 4)
-                    .frame(width: 56, height: 56)
+                    .square(56)
                 Circle()
                     .trim(from: 0, to: viewModel.accuracy)
                     .stroke(FidelTheme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                    .frame(width: 56, height: 56)
+                    .square(56)
                     .rotationEffect(.degrees(-90))
                 Text("ሀ")
                     .font(.system(size: 22, weight: .medium))
@@ -167,7 +167,7 @@ struct AchievementRow: View {
             ZStack {
                 RoundedRectangle(cornerRadius: FidelTheme.radiusS)
                     .fill(achievement.isUnlocked ? FidelTheme.accent.opacity(0.2) : Color(.tertiarySystemFill))
-                    .frame(width: 44, height: 44)
+                    .square(44)
                 Image(systemName: achievement.isUnlocked ? "star.circle.fill" : "star.circle")
                     .font(.title3)
                     .foregroundStyle(achievement.isUnlocked ? FidelTheme.accent : .secondary)

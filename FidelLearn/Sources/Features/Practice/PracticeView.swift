@@ -95,12 +95,12 @@ struct PracticeView: View {
             ZStack {
                 Circle()
                     .stroke(Color(.tertiarySystemFill), lineWidth: 4)
-                    .frame(width: 56, height: 56)
+                    .square(56)
                 if viewModel.accuracy > 0 {
                     Circle()
                         .trim(from: 0, to: viewModel.accuracy)
                         .stroke(FidelTheme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                        .frame(width: 56, height: 56)
+                        .square(56)
                         .rotationEffect(.degrees(-90))
                 }
                 Text("ሀ")
@@ -151,7 +151,7 @@ struct PracticeModeRow: View {
             ZStack {
                 RoundedRectangle(cornerRadius: FidelTheme.radiusS)
                     .fill(FidelTheme.accent.opacity(0.15))
-                    .frame(width: 40, height: 40)
+                    .square(40)
                 Image(systemName: icon)
                     .font(.body.weight(.medium))
                     .foregroundStyle(FidelTheme.accent)

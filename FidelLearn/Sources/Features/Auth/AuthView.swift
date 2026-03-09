@@ -76,7 +76,7 @@ struct AuthView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                     .fill(FidelTheme.accent.opacity(0.1))
-                    .frame(width: 80, height: 80)
+                    .square(80)
                 Text("ሰላም")
                     .font(.system(size: 40, weight: .medium))
                     .foregroundStyle(FidelTheme.accent)

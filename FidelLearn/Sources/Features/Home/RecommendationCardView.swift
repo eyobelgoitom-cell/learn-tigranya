@@ -10,7 +10,7 @@ struct RecommendationCardView: View {
                 Image(systemName: iconName)
                     .font(.title2)
                     .foregroundStyle(FidelTheme.accent)
-                    .frame(width: 32, height: 32)
+                    .square(32)
                 VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                     Text(recommendation.title)
                         .font(FidelTheme.headline)

@@ -85,6 +85,7 @@ struct AlphabetLessonView: View {
                     HStack(spacing: 20) {
                         ForEach(viewModel.characters) { character in
                             FidelCharacterCell(character: character)
+                                .id(character.id)
                         }
                     }
                     .padding(.horizontal, 8)

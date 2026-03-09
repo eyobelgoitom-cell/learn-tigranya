@@ -118,7 +118,7 @@ struct HomeView: View {
                 ZStack {
                     Circle()
                         .fill((viewModel.isStreakAtRisk ? FidelTheme.error : FidelTheme.streak).opacity(0.2))
-                        .frame(width: 52, height: 52)
+                        .square(52)
                     Image(systemName: "flame.fill")
                         .font(.title2)
                         .foregroundStyle(viewModel.isStreakAtRisk ? FidelTheme.error : FidelTheme.streak)

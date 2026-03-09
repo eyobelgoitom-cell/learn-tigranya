@@ -84,6 +84,7 @@ struct VocabularyLessonView: View {
                 LazyVStack(spacing: FidelTheme.spaceM) {
                     ForEach(viewModel.words) { word in
                         VocabularyWordCell(word: word)
+                            .id(word.id)
                     }
                 }
             }

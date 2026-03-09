@@ -250,7 +250,7 @@ struct QuizPracticeView: View {
             ZStack {
                 Circle()
                     .fill(FidelTheme.accent.opacity(0.2))
-                    .frame(width: 96, height: 96)
+                    .square(96)
                 Image(systemName: "star.fill")
                     .font(.system(size: 48))
                     .foregroundStyle(FidelTheme.accent)
@@ -282,7 +282,7 @@ struct QuizPracticeView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                     .fill(FidelTheme.accent.opacity(0.1))
-                    .frame(width: 80, height: 80)
+                    .square(80)
                 Image(systemName: "questionmark.circle.fill")
                     .font(.system(size: 40))
                     .foregroundStyle(FidelTheme.accent)
