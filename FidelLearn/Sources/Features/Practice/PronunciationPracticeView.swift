@@ -22,15 +22,19 @@ struct PronunciationPracticeView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: FidelTheme.spaceM) {
-            Image(systemName: "waveform.circle")
-                .font(.system(size: 56))
-                .foregroundStyle(.secondary)
+        VStack(spacing: FidelTheme.spaceL) {
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                    .fill(FidelTheme.accent.opacity(0.1))
+                    .frame(width: 80, height: 80)
+                Image(systemName: "waveform.circle.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(FidelTheme.accent)
+            }
             Text("No Words Yet")
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(FidelTheme.title)
             Text("Complete vocabulary lessons to practice pronunciation.")
-                .font(.subheadline)
+                .font(FidelTheme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
@@ -91,6 +95,10 @@ private struct PronunciationWordRow: View {
         .padding(FidelTheme.spaceM)
         .background(FidelTheme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: FidelTheme.radiusL))
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .stroke(FidelTheme.accent.opacity(0.15), lineWidth: 1)
+        )
         .shadow(color: FidelTheme.cardShadow, radius: 4, x: 0, y: 2)
     }
 }

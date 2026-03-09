@@ -72,16 +72,20 @@ struct AuthView: View {
     }
 
     private var headerSection: some View {
-        VStack(spacing: 16) {
-            Text("ሰላም")
-                .font(.system(size: 56, weight: .medium))
-                .foregroundStyle(.primary)
-
+        VStack(spacing: FidelTheme.spaceM) {
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                    .fill(FidelTheme.accent.opacity(0.1))
+                    .frame(width: 80, height: 80)
+                Text("ሰላም")
+                    .font(.system(size: 40, weight: .medium))
+                    .foregroundStyle(FidelTheme.accent)
+            }
             Text("Fidel Learn")
-                .font(.system(size: 24, weight: .semibold, design: .rounded))
+                .font(FidelTheme.title)
                 .foregroundStyle(.secondary)
         }
-        .padding(.top, 24)
+        .padding(.top, FidelTheme.spaceL)
     }
 
     private var formSection: some View {
@@ -211,6 +215,7 @@ struct AuthView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 56)
+            .minTouchTarget()
         }
         .buttonStyle(.borderedProminent)
         .tint(FidelTheme.accent)
