@@ -87,7 +87,7 @@ struct WelcomeView: View {
 
             VStack(spacing: 12) {
                 Text("Fidel Learn")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(FidelTheme.titleLarge)
                     .foregroundStyle(.primary)
 
                 Text("Master Tigrinya and Amharic\nthrough the beautiful Ge'ez script")
@@ -106,9 +106,10 @@ struct WelcomeView: View {
                 showAuth = true
             } label: {
                 Text("Get Started")
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(FidelTheme.headline)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
+                    .minTouchTarget()
             }
             .buttonStyle(.borderedProminent)
             .tint(FidelTheme.accent)
@@ -121,12 +122,13 @@ struct WelcomeView: View {
             } label: {
                 HStack(spacing: 8) {
                     Text("Sign In")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(FidelTheme.headline)
                     Image(systemName: "arrow.right")
                         .font(.system(size: 14, weight: .semibold))
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
+                .minTouchTarget()
             }
             .buttonStyle(.bordered)
             .foregroundStyle(FidelTheme.accent)

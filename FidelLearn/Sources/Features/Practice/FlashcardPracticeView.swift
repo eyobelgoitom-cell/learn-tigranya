@@ -26,6 +26,7 @@ struct FlashcardPracticeView: View {
         }
         .navigationTitle("Flashcards")
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.systemGroupedBackground))
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("Mode", selection: $viewModel.mode) {
@@ -80,11 +81,24 @@ struct FlashcardPracticeView: View {
     }
 
     private var progressIndicator: some View {
-        HStack {
-            Text("\(viewModel.progress.current) / \(viewModel.progress.total)")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Spacer()
+        VStack(spacing: FidelTheme.spaceS) {
+            HStack {
+                Text("\(viewModel.progress.current) of \(viewModel.progress.total)")
+                    .font(FidelTheme.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color(.tertiarySystemFill))
+                        .frame(height: 6)
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(FidelTheme.accent)
+                        .frame(width: viewModel.progress.total > 0 ? geo.size.width * CGFloat(viewModel.progress.current) / CGFloat(viewModel.progress.total) : 0, height: 6)
+                }
+            }
+            .frame(height: 6)
         }
     }
 
@@ -151,43 +165,57 @@ struct FlashcardPracticeView: View {
     }
 
     private var completionView: some View {
-        VStack(spacing: 24) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 64))
-                .foregroundStyle(FidelTheme.success)
+        VStack(spacing: FidelTheme.spaceL) {
+            ZStack {
+                Circle()
+                    .fill(FidelTheme.success.opacity(0.2))
+                    .frame(width: 96, height: 96)
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 64))
+                    .foregroundStyle(FidelTheme.success)
+            }
             Text("Session Complete!")
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(FidelTheme.title)
             Text("You knew \(viewModel.knownCount) and will review \(viewModel.reviewLaterCount) later.")
-                .font(.subheadline)
+                .font(FidelTheme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-            Button("Practice Again") {
+            Button {
                 viewModel.loadCards()
+            } label: {
+                Label("Practice Again", systemImage: "arrow.clockwise")
+                    .font(FidelTheme.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, FidelTheme.spaceM)
+                    .minTouchTarget()
             }
             .buttonStyle(.borderedProminent)
             .tint(FidelTheme.accent)
-            .padding(.top, 8)
+            .padding(.top, FidelTheme.spaceS)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(24)
+        .padding(FidelTheme.spaceL)
     }
 
     private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "rectangle.stack")
-                .font(.system(size: 48))
-                .foregroundStyle(.secondary)
+        VStack(spacing: FidelTheme.spaceL) {
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                    .fill(FidelTheme.accent.opacity(0.1))
+                    .frame(width: 80, height: 80)
+                Image(systemName: "rectangle.stack.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(FidelTheme.accent)
+            }
             Text("No Flashcards")
-                .font(.title2)
-                .fontWeight(.semibold)
+                .font(FidelTheme.title)
             Text("Complete lessons to unlock flashcards.")
-                .font(.subheadline)
+                .font(FidelTheme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
+        .padding(FidelTheme.spaceL)
     }
 }
 
@@ -225,7 +253,7 @@ private struct FlashcardView: View {
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                    .stroke(FidelTheme.accent.opacity(0.25), lineWidth: 1)
             )
     }
 
@@ -295,7 +323,7 @@ private struct WordFlashcardView: View {
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                    .stroke(FidelTheme.accent.opacity(0.25), lineWidth: 1)
             )
     }
 
