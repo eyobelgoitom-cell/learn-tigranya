@@ -10,6 +10,7 @@ DECLARE
   v_encrypted_pw TEXT := crypt('demo123456', gen_salt('bf'));
 BEGIN
   -- Insert into auth.users (skip if exists)
+  -- Token columns must be '' not NULL to avoid "Database error querying schema"
   INSERT INTO auth.users (
     id,
     instance_id,
@@ -18,6 +19,10 @@ BEGIN
     email,
     encrypted_password,
     email_confirmed_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token,
     raw_app_meta_data,
     raw_user_meta_data,
     created_at,
@@ -30,6 +35,10 @@ BEGIN
     'demo@fidellearn.com',
     v_encrypted_pw,
     NOW(),
+    '',
+    '',
+    '',
+    '',
     '{"provider":"email","providers":["email"]}'::jsonb,
     '{}'::jsonb,
     NOW(),

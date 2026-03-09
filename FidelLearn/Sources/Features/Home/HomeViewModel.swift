@@ -8,16 +8,21 @@ final class HomeViewModel: ObservableObject {
     @Published var lessonsCompletedToday = 0
     @Published var dailyGoal = 3
     @Published var nextLesson: Lesson?
+    @Published var recommendations: [Recommendation] = []
+    @Published var isStreakAtRisk = false
 
     private let progressService: ProgressServiceProtocol
     private let lessonService: LessonServiceProtocol
+    private let recommendationEngine: RecommendationEngine
 
     init(
         progressService: ProgressServiceProtocol = LocalProgressService(),
-        lessonService: LessonServiceProtocol = LocalLessonService()
+        lessonService: LessonServiceProtocol = LocalLessonService(),
+        recommendationEngine: RecommendationEngine? = nil
     ) {
         self.progressService = progressService
         self.lessonService = lessonService
+        self.recommendationEngine = recommendationEngine ?? RecommendationEngine(progressService: progressService, lessonService: lessonService)
         loadData()
     }
 
@@ -29,6 +34,9 @@ final class HomeViewModel: ObservableObject {
             dailyGoal = goal
             dailyProgress = goal > 0 ? Double(completed) / Double(goal) : 0
             nextLesson = await getNextIncompleteLesson()
+            recommendations = await recommendationEngine.getRecommendations()
+            let hour = Calendar.current.component(.hour, from: Date())
+            isStreakAtRisk = streak > 0 && completed == 0 && hour >= 18
         }
     }
 

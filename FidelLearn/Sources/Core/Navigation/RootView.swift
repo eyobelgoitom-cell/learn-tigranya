@@ -3,11 +3,12 @@ import SwiftUI
 /// Root navigation container with tab-based layout.
 struct RootView: View {
     @State private var selectedTab: RootTab = .home
+    @State private var practiceIntent: PracticeIntent?
     @Environment(\.progressService) private var progressService
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeView(progressService: progressService, selectedTab: $selectedTab)
+            HomeView(progressService: progressService, selectedTab: $selectedTab, practiceIntent: $practiceIntent)
                 .tabItem { Label("Home", systemImage: "house.fill") }
                 .tag(RootTab.home)
 
@@ -15,7 +16,7 @@ struct RootView: View {
                 .tabItem { Label("Lessons", systemImage: "book.fill") }
                 .tag(RootTab.lessons)
 
-            PracticeView()
+            PracticeView(practiceIntent: $practiceIntent)
                 .tabItem { Label("Practice", systemImage: "brain.head.profile") }
                 .tag(RootTab.practice)
 

@@ -7,6 +7,7 @@ protocol LessonServiceProtocol: Sendable {
     func getNextLesson() async -> Lesson?
     func getWords(lessonId: String) async -> [Word]
     func getFidelCharacters(lessonId: String) async -> [FidelCharacter]
+    func search(query: String, language: String) async -> [SearchResult]
 }
 
 final class LessonService: LessonServiceProtocol {
@@ -97,6 +98,11 @@ final class LessonService: LessonServiceProtocol {
         } catch {
             return []
         }
+    }
+
+    func search(query: String, language: String) async -> [SearchResult] {
+        // Supabase full-text search not implemented; use local fallback
+        return []
     }
 
     private func fallbackLessonSections() -> [LessonSection] {

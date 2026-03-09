@@ -7,9 +7,13 @@ final class LessonsViewModel: ObservableObject {
     @Published var selectedLesson: Lesson?
     @Published var isLoading = false
     @Published var lessonProgress: [String: LessonProgress] = [:]
+    @Published var searchText = ""
+    @Published var searchResults: [SearchResult] = []
+    @Published var isSearching = false
 
     private let lessonService: LessonServiceProtocol
     private let progressService: ProgressServiceProtocol
+    private var searchTask: Task<Void, Never>?
 
     init(
         lessonService: LessonServiceProtocol = LocalLessonService(),
@@ -18,6 +22,22 @@ final class LessonsViewModel: ObservableObject {
         self.lessonService = lessonService
         self.progressService = progressService
         loadLessons()
+    }
+
+    func performSearch() {
+        searchTask?.cancel()
+        let q = searchText.trimmingCharacters(in: .whitespaces)
+        guard !q.isEmpty else {
+            searchResults = []
+            return
+        }
+        searchTask = Task {
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            guard !Task.isCancelled else { return }
+            isSearching = true
+            searchResults = await lessonService.search(query: q, language: "tigrinya")
+            isSearching = false
+        }
     }
 
     func loadLessons() {

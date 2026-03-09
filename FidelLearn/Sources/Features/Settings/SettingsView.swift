@@ -9,24 +9,37 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Account") {
+                Section {
                     if appState.isAuthenticated {
-                        HStack {
-                            Text(appState.currentUser?.email ?? "User")
-                                .foregroundStyle(.secondary)
+                        HStack(spacing: FidelTheme.spaceM) {
+                            Image(systemName: "person.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(FidelTheme.accent)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(appState.currentUser?.email ?? "User")
+                                    .font(FidelTheme.headline)
+                                Text("Signed in")
+                                    .font(FidelTheme.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                             Spacer()
                             Button("Sign Out", role: .destructive) {
                                 Task { await appState.signOut() }
                             }
                         }
+                        .padding(.vertical, FidelTheme.spaceXS)
                     } else {
-                        Button("Sign In") {
+                        Button {
                             viewModel.showSignIn = true
+                        } label: {
+                            Label("Sign In", systemImage: "person.badge.plus")
                         }
                     }
+                } header: {
+                    Text("Account")
                 }
 
-                Section("Learning") {
+                Section {
                     Picker("Language", selection: $viewModel.selectedLanguage) {
                         Text("Tigrinya").tag(LearningLanguage.tigrinya)
                         Text("Amharic").tag(LearningLanguage.amharic)
@@ -36,27 +49,38 @@ struct SettingsView: View {
                         Text("Normal").tag(AudioSpeed.normal)
                         Text("Fast").tag(AudioSpeed.fast)
                     }
+                } header: {
+                    Text("Learning")
                 }
 
-                Section("Appearance") {
+                Section {
                     Picker("Color Scheme", selection: $colorSchemeRaw) {
                         ForEach(ColorSchemeOption.allCases, id: \.rawValue) { option in
                             Text(option.rawValue).tag(option.rawValue)
                         }
                     }
+                } header: {
+                    Text("Appearance")
                 }
 
-                Section("Data") {
-                    Button("Clear Cache") {
+                Section {
+                    Button {
                         viewModel.clearCache()
+                    } label: {
+                        Label("Clear Cache", systemImage: "trash")
                     }
-                    Button("Show Welcome Again") {
+                    Button {
                         hasCompletedOnboarding = false
+                    } label: {
+                        Label("Show Welcome Again", systemImage: "hand.wave")
                     }
+                } header: {
+                    Text("Data")
                 }
             }
             .navigationTitle("Settings")
             .listStyle(.insetGrouped)
+            .background(Color(.systemGroupedBackground))
             .sheet(isPresented: $viewModel.showSignIn) {
                 AuthView()
                     .environmentObject(appState)

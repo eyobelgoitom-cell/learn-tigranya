@@ -6,6 +6,7 @@ struct AlphabetLessonView: View {
     @StateObject private var viewModel: AlphabetLessonViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.progressService) private var progressService
+    @Environment(\.learningEventService) private var learningEventService
 
     init(
         lesson: Lesson,
@@ -30,26 +31,44 @@ struct AlphabetLessonView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { viewModel.loadCharacters() }
+        .onAppear {
+            viewModel.loadCharacters()
+            Task {
+                await learningEventService.record(LearningEvent(
+                    eventType: .lessonView,
+                    payload: ["lesson_id": lesson.id, "lesson_type": "alphabet"]
+                ))
+            }
+        }
     }
 
     private var headerSection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: FidelTheme.spaceM) {
+            if !viewModel.characters.isEmpty {
+                Text("\(viewModel.characters.count) characters in this row")
+                    .font(FidelTheme.caption)
+                    .foregroundStyle(.secondary)
+            }
             Text(lesson.subtitle ?? "")
-                .font(.subheadline)
+                .font(FidelTheme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
-        .padding(.bottom, 8)
+        .padding(.bottom, FidelTheme.spaceS)
     }
 
     private var charactersGrid: some View {
         Group {
             if viewModel.isLoading {
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .frame(height: 200)
+                VStack(spacing: FidelTheme.spaceM) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                    Text("Loading characters…")
+                        .font(FidelTheme.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(height: 180)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 20) {
@@ -68,13 +87,17 @@ struct AlphabetLessonView: View {
         Button {
             Task {
                 await progressService.saveProgress(lessonId: lesson.id, completed: true, score: nil)
+                await learningEventService.record(LearningEvent(
+                    eventType: .lessonComplete,
+                    payload: ["lesson_id": lesson.id, "lesson_type": "alphabet"]
+                ))
                 dismiss()
             }
         } label: {
-            Text("Finish Lesson")
-                .font(.headline)
+            Label("Finish Lesson", systemImage: "checkmark.circle.fill")
+                .font(FidelTheme.headline)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
+                .padding(.vertical, FidelTheme.spaceM)
         }
         .buttonStyle(.borderedProminent)
         .tint(FidelTheme.accent)

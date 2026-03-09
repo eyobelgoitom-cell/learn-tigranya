@@ -1,7 +1,13 @@
 import SwiftUI
 
 struct FlashcardPracticeView: View {
-    @StateObject private var viewModel = FlashcardPracticeViewModel()
+    let learningEventService: SyncLearningEventService
+    @StateObject private var viewModel: FlashcardPracticeViewModel
+
+    init(learningEventService: SyncLearningEventService) {
+        self.learningEventService = learningEventService
+        _viewModel = StateObject(wrappedValue: FlashcardPracticeViewModel(learningEventService: learningEventService))
+    }
 
     var body: some View {
         Group {
@@ -85,7 +91,7 @@ struct FlashcardPracticeView: View {
     private var actionButtons: some View {
         HStack(spacing: 16) {
             Button {
-                viewModel.session.reviewLater()
+                viewModel.recordAndReviewLater()
             } label: {
                 Label("Review Later", systemImage: "arrow.clockwise")
                     .frame(maxWidth: .infinity)
@@ -96,7 +102,7 @@ struct FlashcardPracticeView: View {
             .accessibilityHint("Adds card to review queue")
 
             Button {
-                viewModel.session.knowIt()
+                viewModel.recordAndKnowIt()
             } label: {
                 Label("Know It", systemImage: "checkmark.circle.fill")
                     .frame(maxWidth: .infinity)
@@ -112,7 +118,7 @@ struct FlashcardPracticeView: View {
     private var wordActionButtons: some View {
         HStack(spacing: 16) {
             Button {
-                viewModel.wordSession.reviewLater()
+                viewModel.recordAndReviewLater()
             } label: {
                 Label("Review Later", systemImage: "arrow.clockwise")
                     .frame(maxWidth: .infinity)
@@ -123,7 +129,7 @@ struct FlashcardPracticeView: View {
             .accessibilityHint("Adds card to review queue")
 
             Button {
-                viewModel.wordSession.knowIt()
+                viewModel.recordAndKnowIt()
             } label: {
                 Label("Know It", systemImage: "checkmark.circle.fill")
                     .frame(maxWidth: .infinity)
@@ -325,6 +331,6 @@ private struct WordFlashcardView: View {
 
 #Preview {
     NavigationStack {
-        FlashcardPracticeView()
+        FlashcardPracticeView(learningEventService: SyncLearningEventService(getIsAuthenticated: { false }))
     }
 }

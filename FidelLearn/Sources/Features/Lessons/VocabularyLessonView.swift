@@ -6,6 +6,7 @@ struct VocabularyLessonView: View {
     @StateObject private var viewModel: VocabularyLessonViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.progressService) private var progressService
+    @Environment(\.learningEventService) private var learningEventService
 
     init(
         lesson: Lesson,
@@ -30,13 +31,26 @@ struct VocabularyLessonView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { viewModel.loadWords() }
+        .onAppear {
+            viewModel.loadWords()
+            Task {
+                await learningEventService.record(LearningEvent(
+                    eventType: .lessonView,
+                    payload: ["lesson_id": lesson.id, "lesson_type": "vocabulary"]
+                ))
+            }
+        }
     }
 
     private var headerSection: some View {
         VStack(spacing: FidelTheme.spaceS) {
+            if !viewModel.words.isEmpty {
+                Text("\(viewModel.words.count) words")
+                    .font(FidelTheme.caption)
+                    .foregroundStyle(.secondary)
+            }
             Text(lesson.subtitle ?? "")
-                .font(.subheadline)
+                .font(FidelTheme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -47,9 +61,14 @@ struct VocabularyLessonView: View {
     private var wordsList: some View {
         Group {
             if viewModel.isLoading {
-                ProgressView()
-                    .scaleEffect(1.5)
-                    .frame(height: 200)
+                VStack(spacing: FidelTheme.spaceM) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                    Text("Loading words…")
+                        .font(FidelTheme.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(height: 180)
             } else {
                 LazyVStack(spacing: FidelTheme.spaceM) {
                     ForEach(viewModel.words) { word in
@@ -64,13 +83,17 @@ struct VocabularyLessonView: View {
         Button {
             Task {
                 await progressService.saveProgress(lessonId: lesson.id, completed: true, score: nil)
+                await learningEventService.record(LearningEvent(
+                    eventType: .lessonComplete,
+                    payload: ["lesson_id": lesson.id, "lesson_type": "vocabulary"]
+                ))
                 dismiss()
             }
         } label: {
-            Text("Finish Lesson")
-                .font(.headline)
+            Label("Finish Lesson", systemImage: "checkmark.circle.fill")
+                .font(FidelTheme.headline)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
+                .padding(.vertical, FidelTheme.spaceM)
         }
         .buttonStyle(.borderedProminent)
         .tint(FidelTheme.accent)

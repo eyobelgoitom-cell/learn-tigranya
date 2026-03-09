@@ -9,6 +9,7 @@ struct FidelLearnApp: App {
             AppContentView()
                 .environmentObject(appState)
                 .environment(\.progressService, SyncProgressService(appState: appState))
+                .environment(\.learningEventService, SyncLearningEventService(appState: appState))
                 .overlay {
                     if appState.isLoading {
                         Color.black.opacity(0.3)

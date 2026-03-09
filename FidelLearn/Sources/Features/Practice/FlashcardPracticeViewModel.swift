@@ -13,9 +13,84 @@ final class FlashcardPracticeViewModel: ObservableObject {
     @Published var isLoading = false
 
     private let lessonService: LessonServiceProtocol
+    private let learningEventService: LearningEventServiceProtocol
 
-    init(lessonService: LessonServiceProtocol = LocalLessonService()) {
+    init(
+        lessonService: LessonServiceProtocol = LocalLessonService(),
+        learningEventService: LearningEventServiceProtocol
+    ) {
         self.lessonService = lessonService
+        self.learningEventService = learningEventService
+    }
+
+    func recordAndKnowIt() {
+        switch mode {
+        case .alphabet:
+            if let card = session.currentCard {
+                Task {
+                    await learningEventService.record(LearningEvent(
+                        eventType: .flashcardReview,
+                        payload: [
+                            "item_id": card.id,
+                            "knew_it": "true",
+                            "item_type": "fidel",
+                            "consonant_group": card.consonantGroup
+                        ]
+                    ))
+                }
+            }
+            session.knowIt()
+        case .vocabulary:
+            if let card = wordSession.currentCard {
+                Task {
+                    await learningEventService.record(LearningEvent(
+                        eventType: .flashcardReview,
+                        payload: [
+                            "item_id": card.id,
+                            "knew_it": "true",
+                            "item_type": "word",
+                            "lesson_id": card.lessonId
+                        ]
+                    ))
+                }
+            }
+            wordSession.knowIt()
+        }
+    }
+
+    func recordAndReviewLater() {
+        switch mode {
+        case .alphabet:
+            if let card = session.currentCard {
+                Task {
+                    await learningEventService.record(LearningEvent(
+                        eventType: .flashcardReview,
+                        payload: [
+                            "item_id": card.id,
+                            "knew_it": "false",
+                            "item_type": "fidel",
+                            "consonant_group": card.consonantGroup
+                        ]
+                    ))
+                }
+            }
+            session.reviewLater()
+        case .vocabulary:
+            if let card = wordSession.currentCard {
+                Task {
+                    await learningEventService.record(LearningEvent(
+                        eventType: .flashcardReview,
+                        payload: [
+                            "item_id": card.id,
+                            "knew_it": "false",
+                            "item_type": "word",
+                            "lesson_id": card.lessonId
+                        ]
+                    ))
+                }
+            }
+            wordSession.reviewLater()
+        }
     }
 
     func loadCards() {

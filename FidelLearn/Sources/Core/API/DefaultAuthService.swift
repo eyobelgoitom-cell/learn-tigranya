@@ -7,19 +7,22 @@ import Supabase
 final class DefaultAuthService: AuthServiceProtocol, @unchecked Sendable {
     private let supabaseAuth = SupabaseAuthService()
 
+    private var isSupabaseConfigured: Bool {
+        let url = ProcessInfo.processInfo.environment["SUPABASE_URL"]
+            ?? Bundle.main.infoDictionary?["SUPABASE_URL"] as? String
+            ?? ""
+        return !url.isEmpty && !url.contains("your-project")
+    }
+
     var sessionPublisher: AnyPublisher<Session?, Never> {
-        let url = ProcessInfo.processInfo.environment["SUPABASE_URL"] ?? ""
-        let isConfigured = !url.isEmpty && !url.contains("your-project")
-        if isConfigured {
+        if isSupabaseConfigured {
             return supabaseAuth.sessionPublisher
         }
         return Just(nil).eraseToAnyPublisher()
     }
 
     var isAuthResolvingPublisher: AnyPublisher<Bool, Never> {
-        let url = ProcessInfo.processInfo.environment["SUPABASE_URL"] ?? ""
-        let isConfigured = !url.isEmpty && !url.contains("your-project")
-        if isConfigured {
+        if isSupabaseConfigured {
             return supabaseAuth.isAuthResolvingPublisher
         }
         return Just(false).eraseToAnyPublisher()

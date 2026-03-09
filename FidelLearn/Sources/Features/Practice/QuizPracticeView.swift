@@ -2,11 +2,19 @@ import SwiftUI
 
 struct QuizPracticeView: View {
     let progressService: SyncProgressService
+    let learningEventService: SyncLearningEventService
+    let initialMode: PracticeIntent?
     @StateObject private var viewModel: QuizPracticeViewModel
 
-    init(progressService: SyncProgressService) {
+    init(progressService: SyncProgressService, learningEventService: SyncLearningEventService, initialMode: PracticeIntent? = nil) {
         self.progressService = progressService
-        _viewModel = StateObject(wrappedValue: QuizPracticeViewModel(progressService: progressService))
+        self.learningEventService = learningEventService
+        self.initialMode = initialMode
+        _viewModel = StateObject(wrappedValue: QuizPracticeViewModel(
+            progressService: progressService,
+            learningEventService: learningEventService,
+            insightsService: LocalInsightsService()
+        ))
     }
 
     var body: some View {
@@ -38,7 +46,7 @@ struct QuizPracticeView: View {
                 .onChange(of: viewModel.mode) { _ in viewModel.loadQuiz() }
             }
         }
-        .onAppear { viewModel.loadQuiz() }
+        .onAppear { viewModel.loadQuiz(initialMode: initialMode) }
     }
 
     private func questionView(question: QuizQuestion) -> some View {
@@ -244,6 +252,9 @@ struct QuizPracticeView: View {
 
 #Preview {
     NavigationStack {
-        QuizPracticeView(progressService: SyncProgressService(getIsAuthenticated: { false }))
+        QuizPracticeView(
+            progressService: SyncProgressService(getIsAuthenticated: { false }),
+            learningEventService: SyncLearningEventService(getIsAuthenticated: { false })
+        )
     }
 }

@@ -6,9 +6,9 @@ struct CardView<Content: View>: View {
 
     var body: some View {
         content()
-            .background(Color(.secondarySystemGroupedBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
+            .background(FidelTheme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: FidelTheme.radiusL))
+            .shadow(color: FidelTheme.cardShadow, radius: 6, x: 0, y: 2)
     }
 }
 
