@@ -47,6 +47,9 @@ jobs:
           curl -Ls https://install.tuist.io | bash
           tuist version
 
+      - name: Create Config.xcconfig for CI
+        run: cp Config.xcconfig.example Config.xcconfig
+
       - name: Generate project
         run: tuist generate
 
@@ -81,6 +84,9 @@ jobs:
         run: |
           curl -Ls https://install.tuist.io | bash
 
+      - name: Create Config.xcconfig for CI
+        run: cp Config.xcconfig.example Config.xcconfig
+
       - name: Generate project
         run: tuist generate
 
@@ -109,6 +115,9 @@ jobs:
       - name: Install Tuist
         run: |
           curl -Ls https://install.tuist.io | bash
+
+      - name: Create Config.xcconfig for CI
+        run: cp Config.xcconfig.example Config.xcconfig
 
       - name: Generate project
         run: tuist generate
