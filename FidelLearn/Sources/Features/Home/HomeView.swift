@@ -30,6 +30,7 @@ struct HomeView: View {
         CardView {
             HStack {
                 Image(systemName: "flame.fill")
+                    .accessibilityHidden(true)
                     .font(.title)
                     .foregroundStyle(.orange)
                 VStack(alignment: .leading, spacing: 4) {
@@ -42,6 +43,8 @@ struct HomeView: View {
                 Spacer()
             }
             .padding()
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(viewModel.streak) day streak. Keep learning.")
         }
     }
 
@@ -72,6 +75,9 @@ struct HomeView: View {
                         selectedTab = .lessons
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(FidelTheme.accent)
+                    .accessibilityLabel("Continue to \(lesson.title)")
+                    .accessibilityHint("Opens the lessons tab to start this lesson")
                 } else {
                     Text("Start your first lesson!")
                         .font(.subheadline)

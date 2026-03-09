@@ -78,6 +78,8 @@ struct QuizPracticeView: View {
                 }
                 .buttonStyle(.bordered)
                 .tint(.primary)
+                .accessibilityLabel("Answer: \(option)")
+                .accessibilityHint("Select this as your answer")
             }
         }
     }
@@ -102,7 +104,10 @@ struct QuizPracticeView: View {
                 viewModel.session.next()
             }
             .buttonStyle(.borderedProminent)
+            .tint(FidelTheme.accent)
             .frame(maxWidth: .infinity)
+            .accessibilityLabel("Next question")
+            .accessibilityHint("Continue to the next quiz question")
         }
     }
 

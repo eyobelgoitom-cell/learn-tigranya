@@ -107,6 +107,8 @@ private struct FidelCharacterCell: View {
                     .foregroundStyle(FidelTheme.accent)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Play pronunciation")
+            .accessibilityHint("Plays the sound for \(character.transliteration)")
         }
         .frame(minWidth: 64, minHeight: 100)
         .padding(.horizontal, FidelTheme.spaceL)
@@ -114,6 +116,7 @@ private struct FidelCharacterCell: View {
         .background(FidelTheme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: FidelTheme.radiusL))
         .shadow(color: FidelTheme.cardShadow, radius: 4, x: 0, y: 2)
+        .animation(.easeInOut(duration: 0.2), value: character.id)
     }
 }
 

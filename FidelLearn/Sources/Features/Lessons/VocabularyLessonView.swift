@@ -114,6 +114,8 @@ private struct VocabularyWordCell: View {
                     .foregroundStyle(FidelTheme.accent)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Play pronunciation for \(word.translation)")
+            .accessibilityHint("Plays the Tigrinya word \(word.transliteration)")
         }
         .padding(FidelTheme.spaceM)
         .background(FidelTheme.cardBackground)
