@@ -39,10 +39,20 @@ struct UserProgressView: View {
     }
 
     private var progressHeroSection: some View {
-        HStack(alignment: .top, spacing: FidelTheme.spaceM) {
-            Text("ሀ")
-                .font(.system(size: 40, weight: .medium))
-                .foregroundStyle(FidelTheme.accent)
+        HStack(alignment: .center, spacing: FidelTheme.spaceM) {
+            ZStack {
+                Circle()
+                    .stroke(Color(.tertiarySystemFill), lineWidth: 4)
+                    .frame(width: 56, height: 56)
+                Circle()
+                    .trim(from: 0, to: viewModel.accuracy)
+                    .stroke(FidelTheme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .frame(width: 56, height: 56)
+                    .rotationEffect(.degrees(-90))
+                Text("ሀ")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(FidelTheme.accent)
+            }
             VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                 Text("Your Progress")
                     .font(FidelTheme.headline)
@@ -71,8 +81,9 @@ struct UserProgressView: View {
 
     private var masterySection: some View {
         VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
-            Text("Mastery by Row")
+            Label("Mastery by Row", systemImage: "chart.bar.fill")
                 .font(FidelTheme.headline)
+                .foregroundStyle(.primary)
             CardView {
                 VStack(spacing: FidelTheme.spaceS) {
                     ForEach(viewModel.masteryByGroup.prefix(8), id: \.group) { item in
@@ -106,8 +117,9 @@ struct UserProgressView: View {
 
     private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
-            Text("Achievements")
+            Label("Achievements", systemImage: "star.fill")
                 .font(FidelTheme.headline)
+                .foregroundStyle(.primary)
             ForEach(viewModel.achievements, id: \.id) { achievement in
                 AchievementRow(achievement: achievement)
             }
@@ -123,11 +135,16 @@ struct StatCard: View {
 
     var body: some View {
         CardView {
-            VStack(alignment: .leading, spacing: FidelTheme.spaceS) {
+            VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
                 HStack(spacing: FidelTheme.spaceS) {
-                    Image(systemName: icon)
-                        .font(.body)
-                        .foregroundStyle(FidelTheme.accent)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: FidelTheme.radiusS)
+                            .fill(FidelTheme.accent.opacity(0.15))
+                            .frame(width: 32, height: 32)
+                        Image(systemName: icon)
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(FidelTheme.accent)
+                    }
                     Text(title)
                         .font(FidelTheme.caption)
                         .foregroundStyle(.secondary)
@@ -147,9 +164,14 @@ struct AchievementRow: View {
 
     var body: some View {
         HStack(spacing: FidelTheme.spaceM) {
-            Image(systemName: achievement.isUnlocked ? "star.circle.fill" : "star.circle")
-                .font(.title2)
-                .foregroundStyle(achievement.isUnlocked ? FidelTheme.accent : .secondary)
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusS)
+                    .fill(achievement.isUnlocked ? FidelTheme.accent.opacity(0.2) : Color(.tertiarySystemFill))
+                    .frame(width: 44, height: 44)
+                Image(systemName: achievement.isUnlocked ? "star.circle.fill" : "star.circle")
+                    .font(.title3)
+                    .foregroundStyle(achievement.isUnlocked ? FidelTheme.accent : .secondary)
+            }
             VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                 Text(achievement.title)
                     .font(FidelTheme.headline)
@@ -158,6 +180,11 @@ struct AchievementRow: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
+            if achievement.isUnlocked {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(FidelTheme.success)
+            }
         }
         .padding(FidelTheme.spaceM)
         .background(FidelTheme.cardBackground)

@@ -61,12 +61,17 @@ struct LessonsView: View {
                             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
                         }
                         ForEach(viewModel.lessonSections) { section in
-                            Section(section.title) {
+                            Section {
                                 ForEach(section.lessons) { lesson in
                                     NavigationLink(value: lesson) {
                                         LessonRowView(lesson: lesson, progress: viewModel.progress(for: lesson.id))
                                     }
+                                    .listRowBackground(FidelTheme.cardBackground)
                                 }
+                            } header: {
+                                Label(section.title, systemImage: sectionIcon(for: section))
+                                    .font(FidelTheme.headline)
+                                    .foregroundStyle(.primary)
                             }
                         }
                     }
@@ -74,6 +79,7 @@ struct LessonsView: View {
             }
             .searchable(text: $viewModel.searchText, prompt: "Search lessons, words, characters…")
             .onChange(of: viewModel.searchText) { _ in viewModel.performSearch() }
+            .refreshable { viewModel.loadLessons() }
             .navigationTitle("Lessons")
             .listStyle(.insetGrouped)
             .onAppear {
@@ -112,10 +118,20 @@ struct LessonsView: View {
     }
 
     private func lessonsHeroRow(teaser: String) -> some View {
-        HStack(alignment: .top, spacing: FidelTheme.spaceM) {
-            Text("ሀ")
-                .font(.system(size: 40, weight: .medium))
-                .foregroundStyle(FidelTheme.accent)
+        HStack(alignment: .center, spacing: FidelTheme.spaceM) {
+            ZStack {
+                Circle()
+                    .stroke(Color(.tertiarySystemFill), lineWidth: 4)
+                    .frame(width: 56, height: 56)
+                Circle()
+                    .trim(from: 0, to: viewModel.totalLessons > 0 ? CGFloat(viewModel.completedLessons) / CGFloat(viewModel.totalLessons) : 0)
+                    .stroke(FidelTheme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .frame(width: 56, height: 56)
+                    .rotationEffect(.degrees(-90))
+                Text("ሀ")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(FidelTheme.accent)
+            }
             VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                 Text("Learn the Fidel")
                     .font(FidelTheme.headline)
@@ -135,6 +151,14 @@ struct LessonsView: View {
         .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.8), value: appeared)
     }
 
+    private func sectionIcon(for section: LessonSection) -> String {
+        switch section.id.lowercased() {
+        case "alphabet": return "character"
+        case "vocabulary": return "textformat"
+        default: return "book.fill"
+        }
+    }
+
     private var emptyStateView: some View {
         VStack(spacing: FidelTheme.spaceL) {
             Image(systemName: "book.closed.fill")
@@ -142,10 +166,19 @@ struct LessonsView: View {
                 .foregroundStyle(FidelTheme.accent.opacity(0.6))
             Text("No Lessons Yet")
                 .font(FidelTheme.title)
-            Text("Lessons will appear here once loaded.\nPull down to refresh.")
+            Text("Lessons will appear here once loaded.")
                 .font(FidelTheme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+            Button {
+                viewModel.loadLessons()
+            } label: {
+                Label("Refresh", systemImage: "arrow.clockwise")
+                    .font(FidelTheme.headline)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(FidelTheme.accent)
+            .padding(.top, FidelTheme.spaceS)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(FidelTheme.spaceXL)
@@ -197,10 +230,14 @@ struct LessonRowView: View {
 
     var body: some View {
         HStack(spacing: FidelTheme.spaceM) {
-            Image(systemName: lesson.type == .alphabet ? "character" : "textformat")
-                .font(.body)
-                .foregroundStyle(FidelTheme.accent)
-                .frame(width: 24, alignment: .center)
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusS)
+                    .fill(FidelTheme.accent.opacity(0.15))
+                    .frame(width: 40, height: 40)
+                Image(systemName: lesson.type == .alphabet ? "character" : "textformat")
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(FidelTheme.accent)
+            }
             VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                 Text(lesson.title)
                     .font(FidelTheme.headline)

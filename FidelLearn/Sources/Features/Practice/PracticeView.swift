@@ -23,7 +23,7 @@ struct PracticeView: View {
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
 
-                Section("Practice Modes") {
+                Section {
                     NavigationLink {
                         FlashcardPracticeView(learningEventService: learningEventService)
                     } label: {
@@ -33,6 +33,7 @@ struct PracticeView: View {
                             subtitle: "Flip cards to learn letters and words"
                         )
                     }
+                    .listRowBackground(FidelTheme.cardBackground)
                     NavigationLink {
                         QuizPracticeView(progressService: progressService, learningEventService: learningEventService)
                     } label: {
@@ -42,6 +43,7 @@ struct PracticeView: View {
                             subtitle: "Test your knowledge with multiple choice"
                         )
                     }
+                    .listRowBackground(FidelTheme.cardBackground)
                     NavigationLink {
                         PronunciationPracticeView()
                     } label: {
@@ -51,6 +53,11 @@ struct PracticeView: View {
                             subtitle: "Listen and repeat aloud"
                         )
                     }
+                    .listRowBackground(FidelTheme.cardBackground)
+                } header: {
+                    Label("Practice Modes", systemImage: "brain.head.profile")
+                        .font(FidelTheme.headline)
+                        .foregroundStyle(.primary)
                 }
             }
             .navigationTitle("Practice")
@@ -84,10 +91,22 @@ struct PracticeView: View {
     }
 
     private var practiceHeroRow: some View {
-        HStack(alignment: .top, spacing: FidelTheme.spaceM) {
-            Text("ሀ")
-                .font(.system(size: 40, weight: .medium))
-                .foregroundStyle(FidelTheme.accent)
+        HStack(alignment: .center, spacing: FidelTheme.spaceM) {
+            ZStack {
+                Circle()
+                    .stroke(Color(.tertiarySystemFill), lineWidth: 4)
+                    .frame(width: 56, height: 56)
+                if viewModel.accuracy > 0 {
+                    Circle()
+                        .trim(from: 0, to: viewModel.accuracy)
+                        .stroke(FidelTheme.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                        .frame(width: 56, height: 56)
+                        .rotationEffect(.degrees(-90))
+                }
+                Text("ሀ")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(FidelTheme.accent)
+            }
             VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                 Text("Practice")
                     .font(FidelTheme.headline)
@@ -128,13 +147,25 @@ struct PracticeModeRow: View {
     let subtitle: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
-            Label(title, systemImage: icon)
-            Text(subtitle)
-                .font(FidelTheme.caption)
-                .foregroundStyle(.secondary)
+        HStack(spacing: FidelTheme.spaceM) {
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusS)
+                    .fill(FidelTheme.accent.opacity(0.15))
+                    .frame(width: 40, height: 40)
+                Image(systemName: icon)
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(FidelTheme.accent)
+            }
+            VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
+                Text(title)
+                    .font(FidelTheme.headline)
+                Text(subtitle)
+                    .font(FidelTheme.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, FidelTheme.spaceS)
     }
 }
 

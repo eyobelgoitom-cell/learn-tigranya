@@ -58,7 +58,7 @@ struct SettingsView: View {
                         Text("Fast").tag(AudioSpeed.fast)
                     }
                 } header: {
-                    Text("Learning")
+                    Label("Learning", systemImage: "book.fill")
                 }
 
                 Section {
@@ -105,9 +105,14 @@ struct SettingsView: View {
 
     private var settingsHeaderRow: some View {
         HStack(alignment: .center, spacing: FidelTheme.spaceM) {
-            Text("ሀ")
-                .font(.system(size: 44, weight: .medium))
-                .foregroundStyle(FidelTheme.accent)
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusM)
+                    .fill(FidelTheme.accent.opacity(0.15))
+                    .frame(width: 52, height: 52)
+                Text("ሀ")
+                    .font(.system(size: 28, weight: .medium))
+                    .foregroundStyle(FidelTheme.accent)
+            }
             VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                 Text("Fidel Learn")
                     .font(FidelTheme.title)

@@ -7,6 +7,8 @@ struct AlphabetLessonView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.progressService) private var progressService
     @Environment(\.learningEventService) private var learningEventService
+    @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(
         lesson: Lesson,
@@ -21,18 +23,22 @@ struct AlphabetLessonView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 32) {
+            VStack(spacing: FidelTheme.spaceL) {
                 headerSection
                 charactersGrid
                 finishButton
             }
-            .padding(24)
+            .padding(FidelTheme.spaceL)
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 8)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.loadCharacters()
+            if reduceMotion { appeared = true }
+            else { withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true } }
             Task {
                 await learningEventService.record(LearningEvent(
                     eventType: .lessonView,
@@ -55,6 +61,11 @@ struct AlphabetLessonView: View {
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
+        .padding(FidelTheme.spaceM)
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .fill(FidelTheme.cardBackground)
+        )
         .padding(.bottom, FidelTheme.spaceS)
     }
 
@@ -136,11 +147,17 @@ private struct FidelCharacterCell: View {
             .accessibilityLabel("Play pronunciation")
             .accessibilityHint("Plays the sound for \(character.transliteration)")
         }
-        .frame(minWidth: 64, minHeight: 100)
+        .frame(minWidth: 72, minHeight: 110)
         .padding(.horizontal, FidelTheme.spaceL)
         .padding(.vertical, FidelTheme.spaceM)
-        .background(FidelTheme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: FidelTheme.radiusL))
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .fill(FidelTheme.cardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .stroke(FidelTheme.accent.opacity(0.2), lineWidth: 1)
+        )
         .shadow(color: FidelTheme.cardShadow, radius: 4, x: 0, y: 2)
         .animation(.easeInOut(duration: 0.2), value: character.id)
     }

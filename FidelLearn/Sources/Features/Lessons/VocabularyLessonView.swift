@@ -7,6 +7,8 @@ struct VocabularyLessonView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.progressService) private var progressService
     @Environment(\.learningEventService) private var learningEventService
+    @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(
         lesson: Lesson,
@@ -27,12 +29,16 @@ struct VocabularyLessonView: View {
                 finishButton
             }
             .padding(FidelTheme.spaceL)
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 8)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle(lesson.title)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.loadWords()
+            if reduceMotion { appeared = true }
+            else { withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true } }
             Task {
                 await learningEventService.record(LearningEvent(
                     eventType: .lessonView,
@@ -55,6 +61,11 @@ struct VocabularyLessonView: View {
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
+        .padding(FidelTheme.spaceM)
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .fill(FidelTheme.cardBackground)
+        )
         .padding(.bottom, FidelTheme.spaceS)
     }
 
@@ -146,6 +157,10 @@ private struct VocabularyWordCell: View {
         .padding(FidelTheme.spaceM)
         .background(FidelTheme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: FidelTheme.radiusL))
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .stroke(FidelTheme.accent.opacity(0.15), lineWidth: 1)
+        )
         .shadow(color: FidelTheme.cardShadow, radius: 4, x: 0, y: 2)
     }
 }
