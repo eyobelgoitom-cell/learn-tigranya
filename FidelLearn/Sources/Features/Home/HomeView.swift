@@ -63,9 +63,22 @@ struct HomeView: View {
                 RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                     .fill(FidelTheme.cardBackground)
             )
+            .overlay(
+                RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                    .stroke(FidelTheme.accent.opacity(0.12), lineWidth: 1)
+            )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.bottom, FidelTheme.spaceS)
+    }
+
+    /// Excludes redundant daily goal rec when we already have the daily goal card and other recs.
+    private var displayedRecommendations: [Recommendation] {
+        let recs = viewModel.recommendations
+        if recs.count > 1, recs.contains(where: { $0.id == "daily-goal" }) {
+            return recs.filter { $0.id != "daily-goal" }
+        }
+        return recs
     }
 
     private var greeting: String {
@@ -85,7 +98,7 @@ struct HomeView: View {
             if viewModel.recommendations.isEmpty {
                 continueLessonCard
             } else {
-                ForEach(Array(viewModel.recommendations.enumerated()), id: \.element.id) { index, rec in
+                ForEach(Array(displayedRecommendations.enumerated()), id: \.element.id) { index, rec in
                     RecommendationCardView(recommendation: rec) {
                         handleRecommendationTap(rec)
                     }
@@ -170,6 +183,9 @@ struct HomeView: View {
         }
         if viewModel.streak == 0 {
             return "Complete one lesson to start your streak."
+        }
+        if viewModel.streak == 1 {
+            return "First day! Keep it going."
         }
         return "Keep learning!"
     }

@@ -68,13 +68,17 @@ struct UserProgressView: View {
             RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                 .fill(FidelTheme.cardBackground)
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .stroke(FidelTheme.accent.opacity(0.12), lineWidth: 1)
+        )
     }
 
     private var statsGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: FidelTheme.spaceM) {
             StatCard(title: "Words Learned", value: "\(viewModel.wordsLearned)", icon: "textformat")
             StatCard(title: "Lessons", value: "\(viewModel.lessonsCompleted)", icon: "book.fill")
-            StatCard(title: "Streak", value: "\(viewModel.streak) days", icon: "flame.fill")
+            StatCard(title: "Streak", value: viewModel.streak == 1 ? "1 day" : "\(viewModel.streak) days", icon: "flame.fill")
             StatCard(title: "Accuracy", value: "\(Int(viewModel.accuracy * 100))%", icon: "target")
         }
     }
@@ -121,10 +125,21 @@ struct UserProgressView: View {
                 .font(FidelTheme.headline)
                 .foregroundStyle(.primary)
             ForEach(viewModel.achievements, id: \.id) { achievement in
-                AchievementRow(achievement: achievement)
+                AchievementRow(achievement: achievement, progressText: progressText(for: achievement))
+                    .padding(.bottom, FidelTheme.spaceXS)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func progressText(for achievement: Achievement) -> String? {
+        guard !achievement.isUnlocked else { return nil }
+        switch achievement.id {
+        case "1": return "\(viewModel.lessonsCompleted)/1"
+        case "2": return "\(viewModel.streak)/7 days"
+        case "3": return "\(viewModel.wordsLearned)/100"
+        default: return nil
+        }
     }
 }
 
@@ -140,7 +155,7 @@ struct StatCard: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: FidelTheme.radiusS)
                             .fill(FidelTheme.accent.opacity(0.15))
-                            .frame(width: 32, height: 32)
+                            .square(32)
                         Image(systemName: icon)
                             .font(.caption.weight(.medium))
                             .foregroundStyle(FidelTheme.accent)
@@ -161,6 +176,7 @@ struct StatCard: View {
 
 struct AchievementRow: View {
     let achievement: Achievement
+    var progressText: String? = nil
 
     var body: some View {
         HStack(spacing: FidelTheme.spaceM) {
@@ -178,6 +194,11 @@ struct AchievementRow: View {
                 Text(achievement.description)
                     .font(FidelTheme.caption)
                     .foregroundStyle(.secondary)
+                if let progress = progressText, !progress.isEmpty {
+                    Text(progress)
+                        .font(FidelTheme.caption)
+                        .foregroundStyle(FidelTheme.accent)
+                }
             }
             Spacer()
             if achievement.isUnlocked {
