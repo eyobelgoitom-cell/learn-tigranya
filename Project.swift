@@ -24,6 +24,8 @@ let project = Project(
                 "ITSAppUsesNonExemptEncryption": false,
                 "NSMicrophoneUsageDescription": "Fidel Learn needs microphone access for pronunciation practice.",
                 "UIBackgroundModes": ["audio"],
+                "SUPABASE_URL": "$(SUPABASE_URL)",
+                "SUPABASE_ANON_KEY": "$(SUPABASE_ANON_KEY)",
             ]),
             sources: ["FidelLearn/Sources/**"],
             resources: ["FidelLearn/Resources/**"],

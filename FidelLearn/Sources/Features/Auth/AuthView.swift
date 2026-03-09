@@ -5,13 +5,22 @@ struct AuthView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var appState: AppState
 
-    @State private var mode: AuthMode = .signIn
+    var initialMode: AuthMode = .signIn
+    var onAuthSuccess: (() -> Void)?
+
+    @State private var mode: AuthMode
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var appeared = false
+
+    init(initialMode: AuthMode = .signIn, onAuthSuccess: (() -> Void)? = nil) {
+        self.initialMode = initialMode
+        self.onAuthSuccess = onAuthSuccess
+        _mode = State(initialValue: initialMode)
+    }
 
     enum AuthMode: String, CaseIterable {
         case signIn = "Sign In"
@@ -240,6 +249,7 @@ struct AuthView: View {
             case .signUp:
                 try await appState.signUp(email: email, password: password)
             }
+            onAuthSuccess?()
             dismiss()
         } catch {
             errorMessage = error.localizedDescription
@@ -252,6 +262,7 @@ struct AuthView: View {
         defer { isLoading = false }
         do {
             try await appState.signIn(email: "demo@fidellearn.com", password: "demo123456")
+            onAuthSuccess?()
             dismiss()
         } catch {
             errorMessage = error.localizedDescription

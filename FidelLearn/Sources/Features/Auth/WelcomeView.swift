@@ -1,11 +1,12 @@
 import SwiftUI
 
 /// Premium landing screen — first thing users see.
-/// Elegant, cultural, high-end. Get Started → main app. Sign In → full-screen auth.
+/// Get Started → Sign Up. Sign In → Sign In. Dashboard only after auth success.
 struct WelcomeView: View {
     @EnvironmentObject var appState: AppState
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showAuth = false
+    @State private var authMode: AuthView.AuthMode = .signUp
     @State private var appeared = false
 
     var body: some View {
@@ -14,11 +15,10 @@ struct WelcomeView: View {
             contentLayer
         }
         .fullScreenCover(isPresented: $showAuth) {
-            AuthView()
-                .environmentObject(appState)
-                .onDisappear {
-                    hasCompletedOnboarding = true
-                }
+            AuthView(initialMode: authMode) {
+                hasCompletedOnboarding = true
+            }
+            .environmentObject(appState)
         }
     }
 
@@ -102,9 +102,8 @@ struct WelcomeView: View {
     private var actionsSection: some View {
         VStack(spacing: 16) {
             Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    hasCompletedOnboarding = true
-                }
+                authMode = .signUp
+                showAuth = true
             } label: {
                 Text("Get Started")
                     .font(.system(size: 18, weight: .semibold))
@@ -114,9 +113,10 @@ struct WelcomeView: View {
             .buttonStyle(.borderedProminent)
             .tint(FidelTheme.accent)
             .accessibilityLabel("Get started")
-            .accessibilityHint("Start learning without an account")
+            .accessibilityHint("Create an account to start learning")
 
             Button {
+                authMode = .signIn
                 showAuth = true
             } label: {
                 HStack(spacing: 8) {
