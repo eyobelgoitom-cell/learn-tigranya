@@ -248,11 +248,30 @@ FidelLearn/Sources/Features/Practice/
 
 ---
 
-## Remaining Work (Sprint 6)
+## Sprint 6 — Vocabulary & Polish (continued)
 
-| Sprint | Focus | Status |
-|--------|-------|--------|
-| 6 | Vocabulary (100 words), Polish | Not started |
+**Branch:** `develop`  
+**Status:** ✅ In progress
+
+### Deliverables (March 2025)
+
+| Item | Description |
+|------|-------------|
+| **Auth resolution** | `emitLocalSessionAsInitialSession: true`, session.isExpired loading overlay |
+| **Progress sync** | UserProgressView, LessonsView, QuizPracticeView use SyncProgressService |
+| **Quiz stats** | `recordQuizAttempt` persists accuracy; Progress tab reflects quiz performance |
+| **Next lesson** | Home includes vocabulary lessons in "Continue Learning" |
+| **Lessons UX** | Loading state, empty state, bundle path fallback for JSON resources |
+
+### Files Modified
+
+- `SupabaseClient.swift` — Auth options
+- `AuthService.swift`, `DefaultAuthService.swift` — isAuthResolvingPublisher
+- `SyncProgressService.swift` — recordQuizAttempt, full protocol conformance
+- `LocalProgressService.swift` — recordQuizAttempt (public)
+- `RootView.swift` — inject progressService to all tabs
+- `ProgressView.swift`, `LessonsView.swift`, `QuizPracticeView.swift` — SyncProgressService
+- `QuizPracticeViewModel.swift` — submitAnswer → recordQuizAttempt
 
 ---
 
