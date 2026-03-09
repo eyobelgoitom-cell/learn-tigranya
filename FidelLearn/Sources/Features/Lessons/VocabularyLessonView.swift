@@ -51,9 +51,16 @@ struct VocabularyLessonView: View {
     private var headerSection: some View {
         VStack(spacing: FidelTheme.spaceS) {
             if !viewModel.words.isEmpty {
-                Text("\(viewModel.words.count) words")
-                    .font(FidelTheme.caption)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: FidelTheme.spaceM) {
+                    Text("\(viewModel.words.count) words")
+                        .font(FidelTheme.caption)
+                        .foregroundStyle(.secondary)
+                    Text("•")
+                        .foregroundStyle(.tertiary)
+                    Text("Tap play to hear each word")
+                        .font(FidelTheme.caption)
+                        .foregroundStyle(.tertiary)
+                }
             }
             Text(lesson.subtitle ?? "")
                 .font(FidelTheme.body)

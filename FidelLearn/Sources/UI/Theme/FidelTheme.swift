@@ -52,12 +52,17 @@ enum FidelTheme {
         fidelFont(size: 52)
     }
 
-    private static func fidelFont(size: CGFloat) -> Font {
+    /// Fidel font at custom size.
+    static func fidelFont(size: CGFloat) -> Font {
+        fidelFontImpl(size: size)
+    }
+
+    private static func fidelFontImpl(size: CGFloat) -> Font {
         let fontName = "NotoSansEthiopic-Regular"
         if UIFont(name: fontName, size: size) != nil {
-            return Font.custom(fontName, size: size)
+            return .custom(fontName, size: size)
         }
-        return Font.system(size: size, weight: .medium)
+        return .system(size: size, weight: .medium)
     }
 }
 

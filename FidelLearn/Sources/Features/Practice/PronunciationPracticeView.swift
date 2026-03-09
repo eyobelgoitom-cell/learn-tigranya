@@ -7,8 +7,7 @@ struct PronunciationPracticeView: View {
     var body: some View {
         Group {
             if viewModel.isLoading {
-                ProgressView("Loading words…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                loadingView
             } else if viewModel.words.isEmpty {
                 emptyState
             } else {
@@ -19,6 +18,23 @@ struct PronunciationPracticeView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(.systemGroupedBackground))
         .onAppear { viewModel.loadWords() }
+    }
+
+    private var loadingView: some View {
+        VStack(spacing: FidelTheme.spaceL) {
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusXL)
+                    .fill(FidelTheme.accent.opacity(0.08))
+                    .frame(width: 200, height: 180)
+                ProgressView()
+                    .scaleEffect(1.2)
+                    .tint(FidelTheme.accent)
+            }
+            Text("Loading words…")
+                .font(FidelTheme.callout)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var emptyState: some View {

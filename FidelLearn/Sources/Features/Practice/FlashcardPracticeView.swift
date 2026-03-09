@@ -12,8 +12,7 @@ struct FlashcardPracticeView: View {
     var body: some View {
         Group {
             if viewModel.isLoading {
-                ProgressView("Loading flashcards…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                loadingView(message: "Loading flashcards…")
             } else if viewModel.isComplete {
                 completionView
             } else if viewModel.mode == .alphabet, let card = viewModel.session.currentCard {
@@ -40,6 +39,23 @@ struct FlashcardPracticeView: View {
             }
         }
         .onAppear { viewModel.loadCards() }
+    }
+
+    private func loadingView(message: String) -> some View {
+        VStack(spacing: FidelTheme.spaceL) {
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusXL)
+                    .fill(FidelTheme.accent.opacity(0.08))
+                    .frame(width: 200, height: 180)
+                ProgressView()
+                    .scaleEffect(1.2)
+                    .tint(FidelTheme.accent)
+            }
+            Text(message)
+                .font(FidelTheme.callout)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func cardView(card: FidelCharacter) -> some View {
@@ -180,7 +196,7 @@ struct FlashcardPracticeView: View {
             }
             Text("Session Complete!")
                 .font(FidelTheme.title)
-            Text("You knew \(viewModel.knownCount) and will review \(viewModel.reviewLaterCount) later.")
+            Text(completionMessage)
                 .font(FidelTheme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -199,6 +215,18 @@ struct FlashcardPracticeView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(FidelTheme.spaceL)
+    }
+
+    private var completionMessage: String {
+        let known = viewModel.knownCount
+        let review = viewModel.reviewLaterCount
+        if known == viewModel.progress.total && review == 0 {
+            return "Perfect! You knew every card."
+        }
+        if known > review {
+            return "You knew \(known) and will review \(review) later. Great progress!"
+        }
+        return "You knew \(known) and will review \(review) later."
     }
 
     private var emptyStateView: some View {
@@ -264,7 +292,18 @@ private struct FlashcardView: View {
     private var cardFrontContent: some View {
         VStack(spacing: 16) {
             Text(character.character)
-                .font(.system(size: 72, weight: .medium))
+                .font(FidelTheme.fidelFont(size: 64))
+            Button {
+                Task { @MainActor in
+                    await AudioService.shared.play(text: character.transliteration)
+                }
+            } label: {
+                Image(systemName: "play.circle.fill")
+                    .font(.title)
+                    .foregroundStyle(FidelTheme.accent)
+            }
+            .buttonStyle(ScaledButtonStyle())
+            .accessibilityLabel("Play pronunciation")
             Text("Tap to reveal")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -334,7 +373,22 @@ private struct WordFlashcardView: View {
     private var wordFrontContent: some View {
         VStack(spacing: 16) {
             Text(word.fidel)
-                .font(.system(size: 56, weight: .medium))
+                .font(FidelTheme.fidelFont(size: 52))
+            Button {
+                Task { @MainActor in
+                    if let urlString = word.audioUrl, let url = URL(string: urlString) {
+                        await AudioService.shared.play(url: url)
+                    } else {
+                        await AudioService.shared.play(text: word.transliteration)
+                    }
+                }
+            } label: {
+                Image(systemName: "play.circle.fill")
+                    .font(.title)
+                    .foregroundStyle(FidelTheme.accent)
+            }
+            .buttonStyle(ScaledButtonStyle())
+            .accessibilityLabel("Play pronunciation")
             Text("Tap to reveal")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)

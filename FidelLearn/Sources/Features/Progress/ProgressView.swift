@@ -14,6 +14,12 @@ struct UserProgressView: View {
             ScrollView {
                 VStack(spacing: FidelTheme.spaceL) {
                     progressHeroSection
+                    if viewModel.isStreakAtRisk {
+                        streakAtRiskBanner
+                    }
+                    if let suggestion = viewModel.nextStepSuggestion {
+                        nextStepCard(suggestion)
+                    }
                     statsGrid
                     if !viewModel.masteryByGroup.isEmpty {
                         masterySection
@@ -71,6 +77,42 @@ struct UserProgressView: View {
         .overlay(
             RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                 .stroke(FidelTheme.accent.opacity(0.12), lineWidth: 1)
+        )
+    }
+
+    private var streakAtRiskBanner: some View {
+        HStack(spacing: FidelTheme.spaceM) {
+            Image(systemName: "flame.fill")
+                .foregroundStyle(FidelTheme.error)
+            Text("Your \(viewModel.streak)-day streak is at risk. Complete a quick lesson!")
+                .font(FidelTheme.callout)
+                .foregroundStyle(.primary)
+        }
+        .padding(FidelTheme.spaceM)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusM)
+                .fill(FidelTheme.error.opacity(0.12))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusM)
+                .stroke(FidelTheme.error.opacity(0.3), lineWidth: 1)
+        )
+    }
+
+    private func nextStepCard(_ text: String) -> some View {
+        HStack(spacing: FidelTheme.spaceM) {
+            Image(systemName: "lightbulb.fill")
+                .foregroundStyle(FidelTheme.accent)
+            Text(text)
+                .font(FidelTheme.callout)
+                .foregroundStyle(.secondary)
+        }
+        .padding(FidelTheme.spaceM)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusM)
+                .fill(FidelTheme.accent.opacity(0.08))
         )
     }
 

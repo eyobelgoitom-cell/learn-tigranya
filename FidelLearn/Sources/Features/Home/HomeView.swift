@@ -6,6 +6,7 @@ struct HomeView: View {
     @Binding var practiceIntent: PracticeIntent?
     @StateObject private var viewModel: HomeViewModel
     @State private var appeared = false
+    @State private var streakPulse = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(progressService: SyncProgressService, selectedTab: Binding<RootTab> = .constant(.home), practiceIntent: Binding<PracticeIntent?> = .constant(nil)) {
@@ -30,6 +31,7 @@ struct HomeView: View {
             }
             .refreshable { viewModel.loadData() }
             .navigationTitle("Fidel Learn")
+            .navigationBarTitleDisplayMode(.large)
             .background(Color(.systemGroupedBackground))
             .onAppear {
                 viewModel.loadData()
@@ -43,31 +45,58 @@ struct HomeView: View {
     }
 
     private var heroSection: some View {
-        VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
-            HStack(alignment: .top, spacing: FidelTheme.spaceM) {
-                VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .top, spacing: FidelTheme.spaceL) {
+                VStack(alignment: .leading, spacing: FidelTheme.spaceS) {
                     Text(greeting)
-                        .font(FidelTheme.titleLarge)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
                         .foregroundStyle(.primary)
                     Text(viewModel.motivationalMessage)
-                        .font(FidelTheme.body)
+                        .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.secondary)
+                        .lineSpacing(4)
+                    if let summary = viewModel.todaySummary {
+                        Text(summary)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(.tertiary)
+                            .padding(.top, 4)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                Text("ሀ")
-                    .font(.system(size: 48, weight: .medium))
-                    .foregroundStyle(FidelTheme.accent)
+                ZStack {
+                    RoundedRectangle(cornerRadius: FidelTheme.radiusM)
+                        .fill(
+                            LinearGradient(
+                                colors: [FidelTheme.accent.opacity(0.25), FidelTheme.accent.opacity(0.08)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .square(64)
+                    Text(viewModel.heroFidelCharacter)
+                        .font(FidelTheme.fidelFont(size: 40))
+                        .foregroundStyle(FidelTheme.accent)
+                }
+                .shadow(color: FidelTheme.accent.opacity(0.15), radius: 8, x: 0, y: 4)
             }
-            .padding(FidelTheme.spaceM)
-            .background(
-                RoundedRectangle(cornerRadius: FidelTheme.radiusL)
-                    .fill(FidelTheme.cardBackground)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: FidelTheme.radiusL)
-                    .stroke(FidelTheme.accent.opacity(0.12), lineWidth: 1)
-            )
+            .padding(FidelTheme.spaceL)
         }
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusXL)
+                .fill(FidelTheme.cardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusXL)
+                .stroke(
+                    LinearGradient(
+                        colors: [FidelTheme.accent.opacity(0.2), FidelTheme.accent.opacity(0.05)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: FidelTheme.cardShadow, radius: 12, x: 0, y: 4)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.bottom, FidelTheme.spaceS)
     }
@@ -83,18 +112,23 @@ struct HomeView: View {
 
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: Date())
+        let base: String
         switch hour {
-        case 5..<12: return "Good morning"
-        case 12..<17: return "Good afternoon"
-        default: return "Good evening"
+        case 5..<12: base = "Good morning"
+        case 12..<17: base = "Good afternoon"
+        default: base = "Good evening"
         }
+        if hour >= 20, viewModel.lessonsCompletedToday == 0 {
+            return "\(base) — quick 5 min?"
+        }
+        return base
     }
 
     private var recommendationsSection: some View {
-        VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
+        VStack(alignment: .leading, spacing: FidelTheme.spaceL) {
             Text("For You")
-                .font(FidelTheme.headline)
-                .padding(.horizontal, FidelTheme.spaceXS)
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
             if viewModel.recommendations.isEmpty {
                 continueLessonCard
             } else {
@@ -135,8 +169,18 @@ struct HomeView: View {
                     Image(systemName: "flame.fill")
                         .font(.title2)
                         .foregroundStyle(viewModel.isStreakAtRisk ? FidelTheme.error : FidelTheme.streak)
+                        .scaleEffect(viewModel.isStreakAtRisk && !reduceMotion && streakPulse ? 1.15 : 1)
                 }
                 .accessibilityHidden(true)
+                .onAppear {
+                    guard viewModel.isStreakAtRisk, !reduceMotion else { return }
+                    withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                        streakPulse = true
+                    }
+                }
+                .onChange(of: viewModel.isStreakAtRisk) { atRisk in
+                    if !atRisk { streakPulse = false }
+                }
                 VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                     HStack(spacing: FidelTheme.spaceXS) {
                         Text("\(viewModel.streak) day streak")
@@ -182,7 +226,7 @@ struct HomeView: View {
             return "One week strong! Keep it up."
         }
         if viewModel.streak == 0 {
-            return "Complete one lesson to start your streak."
+            return "Your first lesson unlocks your streak."
         }
         if viewModel.streak == 1 {
             return "First day! Keep it going."
@@ -200,42 +244,44 @@ struct HomeView: View {
             }
         } label: {
             CardView {
-                VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
-                HStack {
-                    Text("Daily Goal")
-                        .font(FidelTheme.headline)
-                    Spacer()
-                    if viewModel.lessonsCompletedToday >= viewModel.dailyGoal && viewModel.dailyGoal > 0 {
-                        HStack(spacing: 4) {
-                            Image(systemName: "checkmark.circle.fill")
+                HStack(spacing: FidelTheme.spaceL) {
+                    ZStack {
+                        Circle()
+                            .stroke(Color(.tertiarySystemFill), lineWidth: 6)
+                            .square(56)
+                        Circle()
+                            .trim(from: 0, to: min(1, viewModel.dailyProgress))
+                            .stroke(
+                                viewModel.lessonsCompletedToday >= viewModel.dailyGoal ? FidelTheme.success : FidelTheme.accent,
+                                style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .square(56)
+                            .animation(.easeOut(duration: 0.6), value: viewModel.dailyProgress)
+                        if viewModel.lessonsCompletedToday >= viewModel.dailyGoal && viewModel.dailyGoal > 0 {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 20, weight: .bold))
                                 .foregroundStyle(FidelTheme.success)
-                            Text("Done!")
-                                .font(FidelTheme.headline)
-                                .foregroundStyle(FidelTheme.success)
+                        } else {
+                            Text("\(viewModel.lessonsCompletedToday)")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                                .foregroundStyle(FidelTheme.accent)
                         }
-                    } else {
-                        Text("\(viewModel.lessonsCompletedToday)/\(viewModel.dailyGoal)")
-                            .font(FidelTheme.title)
-                            .foregroundStyle(FidelTheme.accent)
                     }
+                    .frame(width: 56, height: 56)
+                    VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
+                        Text("Daily Goal")
+                            .font(FidelTheme.headline)
+                        Text("\(viewModel.lessonsCompletedToday)/\(viewModel.dailyGoal) lessons")
+                            .font(FidelTheme.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.tertiary)
                 }
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(.tertiarySystemFill))
-                            .frame(height: 12)
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(viewModel.lessonsCompletedToday >= viewModel.dailyGoal ? FidelTheme.success : FidelTheme.accent)
-                            .frame(width: max(0, geo.size.width * viewModel.dailyProgress), height: 12)
-                            .animation(.easeOut(duration: 0.5), value: viewModel.dailyProgress)
-                    }
-                }
-                .frame(height: 12)
-            }
-            .padding(FidelTheme.spaceM)
+                .padding(FidelTheme.spaceM)
             }
         }
         .buttonStyle(PressableCardStyle())
@@ -245,8 +291,19 @@ struct HomeView: View {
     private var continueLessonCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
-                Text(viewModel.hasProgress ? "Continue Learning" : "Start Learning")
-                    .font(FidelTheme.headline)
+                HStack(spacing: FidelTheme.spaceM) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: FidelTheme.radiusS)
+                            .fill(FidelTheme.accent.opacity(0.12))
+                            .square(40)
+                        Image(systemName: "book.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(FidelTheme.accent)
+                    }
+                    Text(viewModel.hasProgress ? "Continue Learning" : "Start Learning")
+                        .font(FidelTheme.headline)
+                    Spacer()
+                }
                 if let lesson = viewModel.nextLesson {
                     VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                         Text(lesson.title)

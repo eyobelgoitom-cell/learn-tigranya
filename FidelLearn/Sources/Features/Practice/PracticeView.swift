@@ -59,11 +59,17 @@ struct PracticeView: View {
                         .font(FidelTheme.headline)
                         .foregroundStyle(.primary)
                 } footer: {
-                    if viewModel.accuracy == 0 && viewModel.streak == 0 {
-                        Text("Complete a lesson first, then practice with flashcards or quizzes to reinforce what you learned.")
-                            .font(FidelTheme.caption)
-                            .foregroundStyle(.secondary)
+                    Group {
+                        if viewModel.accuracy == 0 && viewModel.streak == 0 {
+                            Text("Complete a lesson first, then practice with flashcards or quizzes to reinforce what you learned.")
+                        } else if viewModel.accuracy < 0.6 && viewModel.accuracy > 0 {
+                            Text("Tip: Flashcards help reinforce weak spots before quizzing.")
+                        } else if viewModel.accuracy >= 0.8 {
+                            Text("Great accuracy! Try vocabulary mode to expand your skills.")
+                        }
                     }
+                    .font(FidelTheme.caption)
+                    .foregroundStyle(.secondary)
                 }
             }
             .navigationTitle("Practice")

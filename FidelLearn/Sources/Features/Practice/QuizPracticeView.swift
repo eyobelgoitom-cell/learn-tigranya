@@ -20,8 +20,7 @@ struct QuizPracticeView: View {
     var body: some View {
         Group {
             if viewModel.isLoading {
-                ProgressView("Loading quiz…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                loadingView(message: "Loading quiz…")
             } else if viewModel.isComplete {
                 completionView
             } else if viewModel.mode == .alphabet, let question = viewModel.session.currentQuestion {
@@ -48,6 +47,23 @@ struct QuizPracticeView: View {
             }
         }
         .onAppear { viewModel.loadQuiz(initialMode: initialMode) }
+    }
+
+    private func loadingView(message: String) -> some View {
+        VStack(spacing: FidelTheme.spaceL) {
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusXL)
+                    .fill(FidelTheme.accent.opacity(0.08))
+                    .frame(width: 200, height: 180)
+                ProgressView()
+                    .scaleEffect(1.2)
+                    .tint(FidelTheme.accent)
+            }
+            Text(message)
+                .font(FidelTheme.callout)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func questionView(question: QuizQuestion) -> some View {
@@ -107,8 +123,21 @@ struct QuizPracticeView: View {
             Text("What sound is this?")
                 .font(FidelTheme.caption)
                 .foregroundStyle(.secondary)
-            Text(question.character.character)
-                .font(.system(size: 80, weight: .medium))
+            HStack(spacing: FidelTheme.spaceM) {
+                Text(question.character.character)
+                    .font(FidelTheme.fidelFont(size: 72))
+                Button {
+                    Task { @MainActor in
+                        await AudioService.shared.play(text: question.character.transliteration)
+                    }
+                } label: {
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 36))
+                        .foregroundStyle(FidelTheme.accent)
+                }
+                .buttonStyle(ScaledButtonStyle())
+                .accessibilityLabel("Play pronunciation")
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(FidelTheme.spaceXL)
@@ -126,10 +155,27 @@ struct QuizPracticeView: View {
                 .font(FidelTheme.caption)
                 .foregroundStyle(.secondary)
             Text(question.word.fidel)
-                .font(.system(size: 56, weight: .medium))
-            Text(question.word.transliteration)
-                .font(.title3)
-                .foregroundStyle(.secondary)
+                .font(FidelTheme.fidelFont(size: 52))
+            HStack(spacing: FidelTheme.spaceS) {
+                Text(question.word.transliteration)
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                Button {
+                    Task { @MainActor in
+                        if let urlString = question.word.audioUrl, let url = URL(string: urlString) {
+                            await AudioService.shared.play(url: url)
+                        } else {
+                            await AudioService.shared.play(text: question.word.transliteration)
+                        }
+                    }
+                } label: {
+                    Image(systemName: "play.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(FidelTheme.accent)
+                }
+                .buttonStyle(ScaledButtonStyle())
+                .accessibilityLabel("Play pronunciation")
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(FidelTheme.spaceXL)
@@ -249,17 +295,20 @@ struct QuizPracticeView: View {
         VStack(spacing: FidelTheme.spaceL) {
             ZStack {
                 Circle()
-                    .fill(FidelTheme.accent.opacity(0.2))
+                    .fill(quizScoreColor.opacity(0.2))
                     .square(96)
-                Image(systemName: "star.fill")
+                Image(systemName: quizScoreIcon)
                     .font(.system(size: 48))
-                    .foregroundStyle(FidelTheme.accent)
+                    .foregroundStyle(quizScoreColor)
             }
             Text("Quiz Complete!")
                 .font(FidelTheme.title)
             Text("Score: \(viewModel.score) / \(viewModel.totalQuestions)")
                 .font(FidelTheme.headline)
                 .foregroundStyle(.secondary)
+            Text(quizCompletionMessage)
+                .font(FidelTheme.caption)
+                .foregroundStyle(.tertiary)
             Button {
                 viewModel.loadQuiz()
             } label: {
@@ -275,6 +324,27 @@ struct QuizPracticeView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(FidelTheme.spaceL)
+    }
+
+    private var quizScoreColor: Color {
+        let pct = viewModel.totalQuestions > 0 ? Double(viewModel.score) / Double(viewModel.totalQuestions) : 0
+        if pct >= 0.8 { return FidelTheme.success }
+        if pct >= 0.5 { return FidelTheme.accent }
+        return FidelTheme.error
+    }
+
+    private var quizScoreIcon: String {
+        let pct = viewModel.totalQuestions > 0 ? Double(viewModel.score) / Double(viewModel.totalQuestions) : 0
+        if pct >= 0.8 { return "star.fill" }
+        if pct >= 0.5 { return "checkmark.circle.fill" }
+        return "arrow.clockwise"
+    }
+
+    private var quizCompletionMessage: String {
+        let pct = viewModel.totalQuestions > 0 ? Double(viewModel.score) / Double(viewModel.totalQuestions) : 0
+        if pct >= 0.8 { return "Excellent! Try vocabulary mode next." }
+        if pct >= 0.5 { return "Good effort. Review and try again." }
+        return "Keep practicing — flashcards help."
     }
 
     private var emptyStateView: some View {

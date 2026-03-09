@@ -85,6 +85,15 @@ struct SettingsView: View {
                 } header: {
                     Label("Data", systemImage: "externaldrive.fill")
                 }
+
+                Section {
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text(appVersion)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
             .navigationTitle("Settings")
             .onAppear {
@@ -101,6 +110,12 @@ struct SettingsView: View {
                     .environmentObject(appState)
             }
         }
+    }
+
+    private var appVersion: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        return "\(version) (\(build))"
     }
 
     private var settingsHeaderRow: some View {

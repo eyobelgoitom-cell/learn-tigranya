@@ -1,7 +1,10 @@
-// Copy to Config.xcconfig and add your Supabase credentials
+// Copy to Config.xcconfig and add your credentials
 // Never commit Config.xcconfig to version control
 // SLASH avoids // being treated as xcconfig comment in URLs
 
 SLASH = /
 SUPABASE_URL = https:$(SLASH)$(SLASH)your-project.supabase.co
 SUPABASE_ANON_KEY = your-anon-key
+
+// Required for TestFlight/App Store — find at developer.apple.com/account
+DEVELOPMENT_TEAM = YOUR_TEAM_ID

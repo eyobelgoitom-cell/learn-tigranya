@@ -3,6 +3,7 @@ import SwiftUI
 struct LessonsView: View {
     @StateObject private var viewModel: LessonsViewModel
     @State private var appeared = false
+    @State private var expandedAlphabetGroups: Set<Int> = [0]
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(progressService: SyncProgressService) {
@@ -60,7 +61,53 @@ struct LessonsView: View {
                             .listRowBackground(Color.clear)
                             .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
                         }
-                        ForEach(viewModel.lessonSections) { section in
+                        if !viewModel.alphabetGroups.isEmpty {
+                            Section {
+                                ForEach(Array(viewModel.alphabetGroups.enumerated()), id: \.offset) { index, group in
+                                    DisclosureGroup(isExpanded: Binding(
+                                        get: { expandedAlphabetGroups.contains(index) },
+                                        set: { if $0 { expandedAlphabetGroups.insert(index) } else { expandedAlphabetGroups.remove(index) } }
+                                    )) {
+                                        LazyVGrid(columns: [
+                                            GridItem(.flexible(), spacing: FidelTheme.spaceM),
+                                            GridItem(.flexible(), spacing: FidelTheme.spaceM)
+                                        ], spacing: FidelTheme.spaceS) {
+                                            ForEach(group.lessons) { lesson in
+                                                NavigationLink(value: lesson) {
+                                                    AlphabetLessonGridCell(lesson: lesson, progress: viewModel.progress(for: lesson.id))
+                                                }
+                                                .buttonStyle(.plain)
+                                            }
+                                        }
+                                        .padding(.vertical, FidelTheme.spaceS)
+                                    } label: {
+                                        HStack(spacing: FidelTheme.spaceS) {
+                                            Image(systemName: "character")
+                                                .font(.body.weight(.medium))
+                                                .foregroundStyle(FidelTheme.accent)
+                                                .frame(width: 24, alignment: .center)
+                                            Text(group.title)
+                                                .font(FidelTheme.headline)
+                                            Spacer()
+                                            Text("\(group.lessons.count) lessons")
+                                                .font(FidelTheme.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        .padding(.vertical, 4)
+                                    }
+                                    .listRowBackground(FidelTheme.cardBackground)
+                                }
+                            } header: {
+                                Label("Alphabet", systemImage: "character")
+                                    .font(FidelTheme.headline)
+                                    .foregroundStyle(.primary)
+                            } footer: {
+                                Text("Tap a group to expand. Complete each row to master the full Fidel alphabet.")
+                                    .font(FidelTheme.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        ForEach(viewModel.otherSections) { section in
                             Section {
                                 ForEach(section.lessons) { lesson in
                                     NavigationLink(value: lesson) {
@@ -72,12 +119,6 @@ struct LessonsView: View {
                                 Label(section.title, systemImage: sectionIcon(for: section))
                                     .font(FidelTheme.headline)
                                     .foregroundStyle(.primary)
-                            } footer: {
-                                if section.id.lowercased() == "alphabet" {
-                                    Text("Complete each row to master the full Fidel alphabet.")
-                                        .font(FidelTheme.caption)
-                                        .foregroundStyle(.secondary)
-                                }
                             }
                         }
                     }
@@ -231,6 +272,45 @@ struct SearchResultRow: View {
         case .lesson: "book.fill"
         case .word: "textformat"
         case .fidelCharacter: "character"
+        }
+    }
+}
+
+struct AlphabetLessonGridCell: View {
+    let lesson: Lesson
+    let progress: LessonProgress?
+
+    var body: some View {
+        VStack(spacing: FidelTheme.spaceXS) {
+            Text(lesson.title)
+                .font(FidelTheme.fidelFont(size: 24))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+            if let sub = lesson.subtitle, !sub.isEmpty {
+                Text(sub)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, FidelTheme.spaceM)
+        .padding(.horizontal, FidelTheme.spaceS)
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusM)
+                .fill(FidelTheme.accent.opacity(0.08))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusM)
+                .stroke(FidelTheme.accent.opacity(0.2), lineWidth: 1)
+        )
+        .overlay(alignment: .topTrailing) {
+            if let progress, progress.isCompleted {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(FidelTheme.success)
+                    .padding(4)
+            }
         }
     }
 }

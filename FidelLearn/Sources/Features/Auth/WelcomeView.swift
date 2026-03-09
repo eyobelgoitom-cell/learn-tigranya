@@ -80,14 +80,19 @@ struct WelcomeView: View {
 
     private var heroSection: some View {
         VStack(spacing: 28) {
-            // Fidel mark — large, centered, cultural
-            Text("ሰላም")
-                .font(.system(size: 88, weight: .medium))
-                .foregroundStyle(.primary)
+            ZStack {
+                RoundedRectangle(cornerRadius: FidelTheme.radiusXL)
+                    .fill(FidelTheme.accent.opacity(0.1))
+                    .frame(width: 140, height: 140)
+                Text("ሰላም")
+                    .font(FidelTheme.fidelFont(size: 72))
+                    .foregroundStyle(FidelTheme.accent)
+            }
+            .shadow(color: FidelTheme.accent.opacity(0.15), radius: 12, x: 0, y: 4)
 
             VStack(spacing: 12) {
                 Text("Fidel Learn")
-                    .font(FidelTheme.titleLarge)
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
                     .foregroundStyle(.primary)
 
                 Text("Master Tigrinya and Amharic\nthrough the beautiful Ge'ez script")

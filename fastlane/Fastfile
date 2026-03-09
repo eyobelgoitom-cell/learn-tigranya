@@ -38,10 +38,18 @@ platform :ios do
     )
   end
 
-  desc "Deploy to TestFlight"
+  desc "Deploy to TestFlight (full: lint, test, build, upload)"
   lane :beta do
     lint
     test
+    build
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Deploy to TestFlight (build + upload only, skips lint/test)"
+  lane :beta_fast do
     build
     upload_to_testflight(
       skip_waiting_for_build_processing: true

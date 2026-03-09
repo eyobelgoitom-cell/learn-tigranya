@@ -68,6 +68,9 @@ final class HomeViewModel: ObservableObject {
         if wordsLearned >= 50 {
             return "You've learned \(wordsLearned) words — keep going!"
         }
+        if isStreakAtRisk {
+            return "Quick 5 min? Your streak needs you."
+        }
         if lessonsCompletedToday > 0 {
             return "\(dailyGoal - lessonsCompletedToday) more to reach your daily goal."
         }
@@ -77,7 +80,33 @@ final class HomeViewModel: ObservableObject {
         if !hasProgress {
             return "Your Tigrinya journey starts here — tap below to begin."
         }
+        if isLateEvening {
+            return "Short on time? A quick lesson counts."
+        }
         return "Ready to learn today?"
+    }
+
+    /// Late evening (8pm+) — suggest quick session.
+    var isLateEvening: Bool {
+        let hour = Calendar.current.component(.hour, from: Date())
+        return hour >= 20
+    }
+
+    /// Hero Fidel character — from next lesson title or default ሀ.
+    var heroFidelCharacter: String {
+        guard let lesson = nextLesson, let first = lesson.title.first else { return "ሀ" }
+        return String(first)
+    }
+
+    /// Today's micro-summary when we have progress.
+    var todaySummary: String? {
+        guard lessonsCompletedToday > 0 else { return nil }
+        let lessonPart = "\(lessonsCompletedToday) lesson\(lessonsCompletedToday == 1 ? "" : "s")"
+        let remaining = dailyGoal - lessonsCompletedToday
+        if remaining > 0 {
+            return "Today: \(lessonPart). \(remaining) more to goal."
+        }
+        return "Today: \(lessonPart). Goal reached!"
     }
 
     /// Whether user has made any progress (for first-time vs returning).

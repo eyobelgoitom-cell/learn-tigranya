@@ -7,10 +7,14 @@ struct RecommendationCardView: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: FidelTheme.spaceM) {
-                Image(systemName: iconName)
-                    .font(.title2)
-                    .foregroundStyle(FidelTheme.accent)
-                    .square(32)
+                ZStack {
+                    RoundedRectangle(cornerRadius: FidelTheme.radiusS)
+                        .fill(FidelTheme.accent.opacity(0.12))
+                        .square(40)
+                    Image(systemName: iconName)
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(FidelTheme.accent)
+                }
                 VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                     Text(recommendation.title)
                         .font(FidelTheme.headline)
@@ -37,6 +41,7 @@ struct RecommendationCardView: View {
             RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                 .stroke(priorityColor.opacity(0.3), lineWidth: recommendation.priority == .urgent ? 2 : 0)
         )
+        .shadow(color: FidelTheme.cardShadow, radius: 6, x: 0, y: 2)
     }
 
     private var iconName: String {
