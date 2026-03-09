@@ -13,7 +13,7 @@ final class LessonsViewModel: ObservableObject {
 
     init(
         lessonService: LessonServiceProtocol = LocalLessonService(),
-        progressService: ProgressServiceProtocol = LocalProgressService()
+        progressService: ProgressServiceProtocol
     ) {
         self.lessonService = lessonService
         self.progressService = progressService

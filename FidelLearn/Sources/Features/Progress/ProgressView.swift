@@ -1,7 +1,11 @@
 import SwiftUI
 
 struct UserProgressView: View {
-    @StateObject private var viewModel = ProgressViewModel()
+    @StateObject private var viewModel: ProgressViewModel
+
+    init(progressService: SyncProgressService) {
+        _viewModel = StateObject(wrappedValue: ProgressViewModel(progressService: progressService))
+    }
 
     var body: some View {
         NavigationStack {
@@ -14,6 +18,7 @@ struct UserProgressView: View {
             }
             .navigationTitle("Progress")
             .background(Color(.systemGroupedBackground))
+            .onAppear { viewModel.loadProgress() }
         }
     }
 
@@ -82,5 +87,5 @@ struct AchievementRow: View {
 }
 
 #Preview {
-    UserProgressView()
+    UserProgressView(progressService: SyncProgressService(getIsAuthenticated: { false }))
 }

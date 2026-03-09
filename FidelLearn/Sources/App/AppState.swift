@@ -24,6 +24,13 @@ final class AppState: ObservableObject {
                 self?.currentUser = session.map { User(id: $0.user.id.uuidString, email: $0.user.email, createdAt: nil, updatedAt: nil) }
             }
             .store(in: &cancellables)
+
+        authService.isAuthResolvingPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isResolving in
+                self?.isLoading = isResolving
+            }
+            .store(in: &cancellables)
     }
 
     func signOut() async {

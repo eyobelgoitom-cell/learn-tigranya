@@ -93,6 +93,10 @@ final class LocalProgressService: ProgressServiceProtocol, @unchecked Sendable {
         )
     }
 
+    func recordQuizAttempt(correct: Bool) async {
+        recordQuizAttemptInternal(correct: correct)
+    }
+
     // MARK: - Private
 
     private var completedLessonIds: [String] {
@@ -155,7 +159,7 @@ final class LocalProgressService: ProgressServiceProtocol, @unchecked Sendable {
         }
     }
 
-    private func recordQuizAttempt(correct: Bool) {
+    private func recordQuizAttemptInternal(correct: Bool) {
         let correctKey = "\(quizStatsKey)_correct"
         let totalKey = "\(quizStatsKey)_attempts"
         let c = defaults.integer(forKey: correctKey)

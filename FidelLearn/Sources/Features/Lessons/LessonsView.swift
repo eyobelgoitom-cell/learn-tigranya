@@ -1,16 +1,40 @@
 import SwiftUI
 
 struct LessonsView: View {
-    @StateObject private var viewModel = LessonsViewModel()
+    @StateObject private var viewModel: LessonsViewModel
+
+    init(progressService: SyncProgressService) {
+        _viewModel = StateObject(wrappedValue: LessonsViewModel(progressService: progressService))
+    }
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(viewModel.lessonSections) { section in
-                    Section(section.title) {
-                        ForEach(section.lessons) { lesson in
-                            NavigationLink(value: lesson) {
-                                LessonRowView(lesson: lesson, progress: viewModel.progress(for: lesson.id))
+            Group {
+                if viewModel.isLoading {
+                    ProgressView("Loading lessons…")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if viewModel.lessonSections.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "book.closed")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.secondary)
+                        Text("No Lessons")
+                            .font(.headline)
+                        Text("Lessons will appear here once loaded.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List {
+                        ForEach(viewModel.lessonSections) { section in
+                            Section(section.title) {
+                                ForEach(section.lessons) { lesson in
+                                    NavigationLink(value: lesson) {
+                                        LessonRowView(lesson: lesson, progress: viewModel.progress(for: lesson.id))
+                                    }
+                                }
                             }
                         }
                     }
@@ -26,6 +50,11 @@ struct LessonsView: View {
                 }
             }
             .onAppear { viewModel.refreshProgress() }
+        }
+        .onAppear {
+            if viewModel.lessonSections.isEmpty && !viewModel.isLoading {
+                viewModel.loadLessons()
+            }
         }
     }
 }
@@ -54,5 +83,5 @@ struct LessonRowView: View {
 }
 
 #Preview {
-    LessonsView()
+    LessonsView(progressService: SyncProgressService(getIsAuthenticated: { false }))
 }

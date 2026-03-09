@@ -11,7 +11,7 @@ struct RootView: View {
                 .tabItem { Label("Home", systemImage: "house.fill") }
                 .tag(RootTab.home)
 
-            LessonsView()
+            LessonsView(progressService: progressService)
                 .tabItem { Label("Lessons", systemImage: "book.fill") }
                 .tag(RootTab.lessons)
 
@@ -19,7 +19,7 @@ struct RootView: View {
                 .tabItem { Label("Practice", systemImage: "brain.head.profile") }
                 .tag(RootTab.practice)
 
-            UserProgressView()
+            UserProgressView(progressService: progressService)
                 .tabItem { Label("Progress", systemImage: "chart.bar.fill") }
                 .tag(RootTab.progress)
 
@@ -37,4 +37,5 @@ enum RootTab: Hashable {
 
 #Preview {
     RootView()
+        .environment(\.progressService, SyncProgressService(getIsAuthenticated: { false }))
 }

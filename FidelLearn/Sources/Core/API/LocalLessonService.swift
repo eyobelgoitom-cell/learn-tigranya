@@ -55,7 +55,9 @@ final class LocalLessonService: LessonServiceProtocol, @unchecked Sendable {
 
     private func loadLessons() async -> [Lesson] {
         if let cached = lessonsCache { return cached }
-        guard let url = bundle.url(forResource: "lessons", withExtension: "json", subdirectory: "Data"),
+        let url = bundle.url(forResource: "lessons", withExtension: "json", subdirectory: "Data")
+            ?? bundle.url(forResource: "lessons", withExtension: "json")
+        guard let url,
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([Lesson].self, from: data) else {
             return []
@@ -66,7 +68,9 @@ final class LocalLessonService: LessonServiceProtocol, @unchecked Sendable {
 
     private func loadFidelCharacters() async -> [FidelCharacterRecord] {
         if let cached = fidelCache { return cached }
-        guard let url = bundle.url(forResource: "fidel_characters", withExtension: "json", subdirectory: "Data"),
+        let url = bundle.url(forResource: "fidel_characters", withExtension: "json", subdirectory: "Data")
+            ?? bundle.url(forResource: "fidel_characters", withExtension: "json")
+        guard let url,
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([FidelCharacterRecord].self, from: data) else {
             return []
@@ -77,7 +81,9 @@ final class LocalLessonService: LessonServiceProtocol, @unchecked Sendable {
 
     private func loadWords() async -> [Word] {
         if let cached = wordsCache { return cached }
-        guard let url = bundle.url(forResource: "words", withExtension: "json", subdirectory: "Data"),
+        let url = bundle.url(forResource: "words", withExtension: "json", subdirectory: "Data")
+            ?? bundle.url(forResource: "words", withExtension: "json")
+        guard let url,
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([Word].self, from: data) else {
             return []

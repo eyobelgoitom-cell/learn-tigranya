@@ -6,9 +6,23 @@ final class QuizPracticeViewModel: ObservableObject {
     @Published var isLoading = false
 
     private let lessonService: LessonServiceProtocol
+    private let progressService: ProgressServiceProtocol
 
-    init(lessonService: LessonServiceProtocol = LocalLessonService()) {
+    init(
+        lessonService: LessonServiceProtocol = LocalLessonService(),
+        progressService: ProgressServiceProtocol
+    ) {
         self.lessonService = lessonService
+        self.progressService = progressService
+    }
+
+    func submitAnswer(_ answer: String) {
+        guard let question = session.currentQuestion else { return }
+        session.selectAnswer(answer)
+        let wasCorrect = answer == question.correctAnswer
+        Task {
+            await progressService.recordQuizAttempt(correct: wasCorrect)
+        }
     }
 
     func loadQuiz(questionCount: Int = 10) {

@@ -52,15 +52,69 @@ final class SyncProgressService: ProgressServiceProtocol, @unchecked Sendable {
         return localStreak
     }
 
-    func getDailyProgress() async -> (Int, Int) {
+    func getDailyProgress() async -> (completed: Int, goal: Int) {
         let localResult = await local.getDailyProgress()
         if await getIsAuthenticated() {
             let remoteResult = await remote.getDailyProgress()
-            let completed = max(localResult.0, remoteResult.0)
-            let goal = max(localResult.1, remoteResult.1)
+            let completed = max(localResult.completed, remoteResult.completed)
+            let goal = max(localResult.goal, remoteResult.goal)
             return (completed, goal)
         }
         return localResult
+    }
+
+    func getWordsLearned() async -> Int {
+        let localCount = await local.getWordsLearned()
+        if await getIsAuthenticated() {
+            let remoteCount = await remote.getWordsLearned()
+            return max(localCount, remoteCount)
+        }
+        return localCount
+    }
+
+    func getLessonsCompleted() async -> Int {
+        let localCount = await local.getLessonsCompleted()
+        if await getIsAuthenticated() {
+            let remoteCount = await remote.getLessonsCompleted()
+            return max(localCount, remoteCount)
+        }
+        return localCount
+    }
+
+    func getAccuracy() async -> Double {
+        let localAccuracy = await local.getAccuracy()
+        if await getIsAuthenticated() {
+            let remoteAccuracy = await remote.getAccuracy()
+            return max(localAccuracy, remoteAccuracy)
+        }
+        return localAccuracy
+    }
+
+    func getAchievements() async -> [Achievement] {
+        let localAchievements = await local.getAchievements()
+        if await getIsAuthenticated() {
+            let remoteAchievements = await remote.getAchievements()
+            return mergeAchievements(local: localAchievements, remote: remoteAchievements)
+        }
+        return localAchievements
+    }
+
+    func recordQuizAttempt(correct: Bool) async {
+        await local.recordQuizAttempt(correct: correct)
+    }
+
+    private func mergeAchievements(local: [Achievement], remote: [Achievement]) -> [Achievement] {
+        local.enumerated().map { index, localA in
+            let remoteA = remote.first { $0.id == localA.id }
+            let isUnlocked = localA.isUnlocked || (remoteA?.isUnlocked ?? false)
+            return Achievement(
+                id: localA.id,
+                title: localA.title,
+                description: localA.description,
+                isUnlocked: isUnlocked,
+                unlockedAt: localA.unlockedAt ?? remoteA?.unlockedAt
+            )
+        }
     }
 
     private func mergeLessonProgress(local: LessonProgress?, remote: LessonProgress?) -> LessonProgress? {

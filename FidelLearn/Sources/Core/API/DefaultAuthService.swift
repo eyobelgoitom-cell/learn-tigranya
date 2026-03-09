@@ -16,6 +16,15 @@ final class DefaultAuthService: AuthServiceProtocol, @unchecked Sendable {
         return Just(nil).eraseToAnyPublisher()
     }
 
+    var isAuthResolvingPublisher: AnyPublisher<Bool, Never> {
+        let url = ProcessInfo.processInfo.environment["SUPABASE_URL"] ?? ""
+        let isConfigured = !url.isEmpty && !url.contains("your-project")
+        if isConfigured {
+            return supabaseAuth.isAuthResolvingPublisher
+        }
+        return Just(false).eraseToAnyPublisher()
+    }
+
     func signIn(email: String, password: String) async throws {
         try await supabaseAuth.signIn(email: email, password: password)
     }

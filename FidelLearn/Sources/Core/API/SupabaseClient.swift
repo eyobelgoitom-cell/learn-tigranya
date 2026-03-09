@@ -8,7 +8,12 @@ enum SupabaseConfig {
         let key = ProcessInfo.processInfo.environment["SUPABASE_ANON_KEY"] ?? "your-anon-key"
         return SupabaseClient(
             supabaseURL: url,
-            supabaseKey: key
+            supabaseKey: key,
+            options: SupabaseClientOptions(
+                auth: SupabaseClientOptions.AuthOptions(
+                    emitLocalSessionAsInitialSession: true
+                )
+            )
         )
     }
 }

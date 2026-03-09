@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct PracticeView: View {
+    @Environment(\.progressService) private var progressService
     @StateObject private var viewModel = PracticeViewModel()
 
     var body: some View {
@@ -13,7 +14,7 @@ struct PracticeView: View {
                         Label("Flashcards", systemImage: "rectangle.stack.fill")
                     }
                     NavigationLink {
-                        QuizPracticeView()
+                        QuizPracticeView(progressService: progressService)
                     } label: {
                         Label("Quizzes", systemImage: "questionmark.circle.fill")
                     }

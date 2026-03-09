@@ -34,7 +34,7 @@ final class HomeViewModel: ObservableObject {
 
     private func getNextIncompleteLesson() async -> Lesson? {
         let lessons = await lessonService.getLessons(language: "tigrinya")
-        for lesson in lessons where lesson.type == .alphabet {
+        for lesson in lessons {
             if await progressService.getLessonProgress(lessonId: lesson.id) == nil {
                 return lesson
             }

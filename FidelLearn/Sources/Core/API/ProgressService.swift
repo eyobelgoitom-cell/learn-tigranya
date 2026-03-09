@@ -9,6 +9,7 @@ protocol ProgressServiceProtocol: Sendable {
     func getAchievements() async -> [Achievement]
     func saveProgress(lessonId: String, completed: Bool, score: Double?) async
     func getLessonProgress(lessonId: String) async -> LessonProgress?
+    func recordQuizAttempt(correct: Bool) async
 }
 
 final class ProgressService: ProgressServiceProtocol {
@@ -142,6 +143,10 @@ final class ProgressService: ProgressServiceProtocol {
         } catch {
             // Handle error
         }
+    }
+
+    func recordQuizAttempt(correct: Bool) async {
+        // Quiz accuracy tracked locally; Supabase user_stats could be extended later
     }
 
     private func currentUserId() async -> String? {

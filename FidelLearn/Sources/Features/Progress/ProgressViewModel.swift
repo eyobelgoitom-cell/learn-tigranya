@@ -11,7 +11,7 @@ final class ProgressViewModel: ObservableObject {
 
     private let progressService: ProgressServiceProtocol
 
-    init(progressService: ProgressServiceProtocol = LocalProgressService()) {
+    init(progressService: ProgressServiceProtocol) {
         self.progressService = progressService
         loadProgress()
     }

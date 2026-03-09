@@ -1,7 +1,13 @@
 import SwiftUI
 
 struct QuizPracticeView: View {
-    @StateObject private var viewModel = QuizPracticeViewModel()
+    let progressService: SyncProgressService
+    @StateObject private var viewModel: QuizPracticeViewModel
+
+    init(progressService: SyncProgressService) {
+        self.progressService = progressService
+        _viewModel = StateObject(wrappedValue: QuizPracticeViewModel(progressService: progressService))
+    }
 
     var body: some View {
         Group {
@@ -63,7 +69,7 @@ struct QuizPracticeView: View {
         VStack(spacing: 12) {
             ForEach(question.options, id: \.self) { option in
                 Button {
-                    viewModel.session.selectAnswer(option)
+                    viewModel.submitAnswer(option)
                 } label: {
                     Text(option)
                         .font(.headline)
@@ -140,6 +146,6 @@ struct QuizPracticeView: View {
 
 #Preview {
     NavigationStack {
-        QuizPracticeView()
+        QuizPracticeView(progressService: SyncProgressService(getIsAuthenticated: { false }))
     }
 }
