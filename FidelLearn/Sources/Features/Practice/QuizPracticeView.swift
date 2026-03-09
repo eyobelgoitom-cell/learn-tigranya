@@ -120,15 +120,16 @@ struct QuizPracticeView: View {
     }
 
     private func answerButtons(question: QuizQuestion) -> some View {
-        VStack(spacing: 12) {
+        VStack(spacing: FidelTheme.spaceM) {
             ForEach(question.options, id: \.self) { option in
                 Button {
                     viewModel.submitAnswer(option)
                 } label: {
                     Text(option)
-                        .font(.headline)
+                        .font(FidelTheme.headline)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
+                        .padding(.vertical, FidelTheme.spaceM)
+                        .minTouchTarget()
                 }
                 .buttonStyle(.bordered)
                 .tint(.primary)
@@ -139,15 +140,16 @@ struct QuizPracticeView: View {
     }
 
     private func wordAnswerButtons(question: WordQuizQuestion) -> some View {
-        VStack(spacing: 12) {
+        VStack(spacing: FidelTheme.spaceM) {
             ForEach(question.options, id: \.self) { option in
                 Button {
                     viewModel.submitAnswer(option)
                 } label: {
                     Text(option)
-                        .font(.headline)
+                        .font(FidelTheme.headline)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
+                        .padding(.vertical, FidelTheme.spaceM)
+                        .minTouchTarget()
                 }
                 .buttonStyle(.bordered)
                 .tint(.primary)
@@ -173,12 +175,17 @@ struct QuizPracticeView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            Button("Next") {
+            Button {
                 viewModel.session.next()
+            } label: {
+                Text("Next")
+                    .font(FidelTheme.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, FidelTheme.spaceM)
+                    .minTouchTarget()
             }
             .buttonStyle(.borderedProminent)
             .tint(FidelTheme.accent)
-            .frame(maxWidth: .infinity)
             .accessibilityLabel("Next question")
             .accessibilityHint("Continue to the next quiz question")
         }
@@ -200,12 +207,17 @@ struct QuizPracticeView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            Button("Next") {
+            Button {
                 viewModel.wordSession.next()
+            } label: {
+                Text("Next")
+                    .font(FidelTheme.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, FidelTheme.spaceM)
+                    .minTouchTarget()
             }
             .buttonStyle(.borderedProminent)
             .tint(FidelTheme.accent)
-            .frame(maxWidth: .infinity)
             .accessibilityLabel("Next question")
             .accessibilityHint("Continue to the next quiz question")
         }

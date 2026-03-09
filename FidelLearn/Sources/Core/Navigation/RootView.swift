@@ -16,7 +16,7 @@ struct RootView: View {
                 .tabItem { Label("Lessons", systemImage: "book.fill") }
                 .tag(RootTab.lessons)
 
-            PracticeView(practiceIntent: $practiceIntent)
+            PracticeView(progressService: progressService, practiceIntent: $practiceIntent)
                 .tabItem { Label("Practice", systemImage: "brain.head.profile") }
                 .tag(RootTab.practice)
 

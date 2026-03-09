@@ -82,12 +82,13 @@ final class RecommendationEngine: @unchecked Sendable {
                 action: .continueLesson(next)
             ))
         }
-        if dailyCompleted < dailyGoal {
+        // Skip daily goal rec — we already show the daily goal card above; avoids redundancy.
+        if dailyCompleted < dailyGoal && recs.isEmpty {
             recs.append(Recommendation(
                 id: "daily-goal",
                 priority: .normal,
-                title: "Daily goal",
-                subtitle: "\(dailyCompleted)/\(dailyGoal) lessons today",
+                title: "Start learning",
+                subtitle: "Complete \(dailyGoal) lessons to reach your daily goal",
                 action: .completeDailyGoal
             ))
         }

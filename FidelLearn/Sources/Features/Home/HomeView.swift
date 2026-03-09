@@ -6,6 +6,7 @@ struct HomeView: View {
     @Binding var practiceIntent: PracticeIntent?
     @StateObject private var viewModel: HomeViewModel
     @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(progressService: SyncProgressService, selectedTab: Binding<RootTab> = .constant(.home), practiceIntent: Binding<PracticeIntent?> = .constant(nil)) {
         self.progressService = progressService
@@ -32,19 +33,36 @@ struct HomeView: View {
             .background(Color(.systemGroupedBackground))
             .onAppear {
                 viewModel.loadData()
-                withAnimation(.easeOut(duration: 0.4)) { appeared = true }
+                if reduceMotion {
+                    appeared = true
+                } else {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true }
+                }
             }
         }
     }
 
     private var heroSection: some View {
-        VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
-            Text(greeting)
-                .font(FidelTheme.titleLarge)
-                .foregroundStyle(.primary)
-            Text("Ready to learn today?")
-                .font(FidelTheme.body)
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
+            HStack(alignment: .top, spacing: FidelTheme.spaceM) {
+                VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
+                    Text(greeting)
+                        .font(FidelTheme.titleLarge)
+                        .foregroundStyle(.primary)
+                    Text(viewModel.motivationalMessage)
+                        .font(FidelTheme.body)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Text("ሀ")
+                    .font(.system(size: 48, weight: .medium))
+                    .foregroundStyle(FidelTheme.accent)
+            }
+            .padding(FidelTheme.spaceM)
+            .background(
+                RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                    .fill(FidelTheme.cardBackground)
+            )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.bottom, FidelTheme.spaceS)
@@ -73,7 +91,7 @@ struct HomeView: View {
                     }
                     .opacity(appeared ? 1 : 0)
                     .offset(y: appeared ? 0 : 8)
-                    .animation(.easeOut(duration: 0.35).delay(Double(index) * 0.05), value: appeared)
+                    .animation(reduceMotion ? nil : .spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.04), value: appeared)
                 }
             }
         }
@@ -109,13 +127,17 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                     Text("\(viewModel.streak) day streak")
                         .font(FidelTheme.headline)
-                    Text(viewModel.isStreakAtRisk ? "Don't break it — quick lesson?" : "Keep learning!")
+                    Text(streakSubtext)
                         .font(FidelTheme.caption)
                         .foregroundStyle(viewModel.isStreakAtRisk ? FidelTheme.error : .secondary)
                 }
                 Spacer()
                 if viewModel.streak >= 7 {
                     Text("🔥")
+                        .font(.title2)
+                }
+                if viewModel.streak >= 30 {
+                    Text("⭐")
                         .font(.title2)
                 }
             }
@@ -125,16 +147,52 @@ struct HomeView: View {
         }
     }
 
+    private var streakSubtext: String {
+        if viewModel.isStreakAtRisk {
+            return "Don't break it — quick lesson?"
+        }
+        if viewModel.streak >= 30 {
+            return "Incredible! 30 days of learning."
+        }
+        if viewModel.streak >= 7 {
+            return "One week strong! Keep it up."
+        }
+        if viewModel.streak == 0 {
+            return "Complete one lesson to start your streak."
+        }
+        return "Keep learning!"
+    }
+
     private var dailyGoalCard: some View {
-        CardView {
-            VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
+        Button {
+            if viewModel.lessonsCompletedToday >= viewModel.dailyGoal {
+                selectedTab = .practice
+            } else {
+                selectedTab = .lessons
+            }
+        } label: {
+            CardView {
+                VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
                 HStack {
                     Text("Daily Goal")
                         .font(FidelTheme.headline)
                     Spacer()
-                    Text("\(viewModel.lessonsCompletedToday)/\(viewModel.dailyGoal)")
-                        .font(FidelTheme.title)
-                        .foregroundStyle(FidelTheme.accent)
+                    if viewModel.lessonsCompletedToday >= viewModel.dailyGoal && viewModel.dailyGoal > 0 {
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(FidelTheme.success)
+                            Text("Done!")
+                                .font(FidelTheme.headline)
+                                .foregroundStyle(FidelTheme.success)
+                        }
+                    } else {
+                        Text("\(viewModel.lessonsCompletedToday)/\(viewModel.dailyGoal)")
+                            .font(FidelTheme.title)
+                            .foregroundStyle(FidelTheme.accent)
+                    }
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
                 }
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
@@ -142,7 +200,7 @@ struct HomeView: View {
                             .fill(Color(.tertiarySystemFill))
                             .frame(height: 12)
                         RoundedRectangle(cornerRadius: 6)
-                            .fill(FidelTheme.accent)
+                            .fill(viewModel.lessonsCompletedToday >= viewModel.dailyGoal ? FidelTheme.success : FidelTheme.accent)
                             .frame(width: max(0, geo.size.width * viewModel.dailyProgress), height: 12)
                             .animation(.easeOut(duration: 0.5), value: viewModel.dailyProgress)
                     }
@@ -150,34 +208,73 @@ struct HomeView: View {
                 .frame(height: 12)
             }
             .padding(FidelTheme.spaceM)
+            }
         }
+        .buttonStyle(PressableCardStyle())
+        .accessibilityLabel("Daily goal. \(viewModel.lessonsCompletedToday) of \(viewModel.dailyGoal) completed. Tap to \(viewModel.lessonsCompletedToday >= viewModel.dailyGoal ? "practice" : "continue learning").")
     }
 
     private var continueLessonCard: some View {
         CardView {
             VStack(alignment: .leading, spacing: FidelTheme.spaceM) {
-                Text("Continue Learning")
+                Text(viewModel.hasProgress ? "Continue Learning" : "Start Learning")
                     .font(FidelTheme.headline)
                 if let lesson = viewModel.nextLesson {
-                    Text(lesson.title)
-                        .font(FidelTheme.body)
-                        .foregroundStyle(.secondary)
-                    Button {
-                        selectedTab = .lessons
-                    } label: {
-                        Label("Continue", systemImage: "arrow.right")
-                            .font(FidelTheme.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, FidelTheme.spaceM)
+                    VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
+                        Text(lesson.title)
+                            .font(FidelTheme.body)
+                            .foregroundStyle(.secondary)
+                        if let teaser = viewModel.progressTeaser {
+                            Text(teaser)
+                                .font(FidelTheme.caption)
+                                .foregroundStyle(.tertiary)
+                        }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(FidelTheme.accent)
-                    .accessibilityLabel("Continue to \(lesson.title)")
-                    .accessibilityHint("Opens the lessons tab to start this lesson")
+                    HStack(spacing: FidelTheme.spaceM) {
+                        Button {
+                            selectedTab = .lessons
+                        } label: {
+                            Label("Lessons", systemImage: "book.fill")
+                                .font(FidelTheme.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, FidelTheme.spaceM)
+                                .minTouchTarget()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(FidelTheme.accent)
+                        .accessibilityLabel("Continue to \(lesson.title)")
+                        Button {
+                            selectedTab = .practice
+                        } label: {
+                            Label("Practice", systemImage: "brain.head.profile")
+                                .font(FidelTheme.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, FidelTheme.spaceM)
+                                .minTouchTarget()
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityLabel("Practice quiz and flashcards")
+                    }
                 } else {
-                    Text("Start your first lesson!")
-                        .font(FidelTheme.body)
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: FidelTheme.spaceS) {
+                        Text("You've completed all lessons!")
+                            .font(FidelTheme.body)
+                            .foregroundStyle(.secondary)
+                        Text("Review with flashcards or quizzes.")
+                            .font(FidelTheme.caption)
+                            .foregroundStyle(.tertiary)
+                        Button {
+                            selectedTab = .practice
+                        } label: {
+                            Label("Practice", systemImage: "brain.head.profile")
+                                .font(FidelTheme.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, FidelTheme.spaceM)
+                                .minTouchTarget()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(FidelTheme.accent)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -89,13 +89,15 @@ struct FlashcardPracticeView: View {
     }
 
     private var actionButtons: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: FidelTheme.spaceM) {
             Button {
                 viewModel.recordAndReviewLater()
             } label: {
                 Label("Review Later", systemImage: "arrow.clockwise")
+                    .font(FidelTheme.headline)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, FidelTheme.spaceM)
+                    .minTouchTarget()
             }
             .buttonStyle(.bordered)
             .accessibilityLabel("Review later")
@@ -105,8 +107,10 @@ struct FlashcardPracticeView: View {
                 viewModel.recordAndKnowIt()
             } label: {
                 Label("Know It", systemImage: "checkmark.circle.fill")
+                    .font(FidelTheme.headline)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, FidelTheme.spaceM)
+                    .minTouchTarget()
             }
             .buttonStyle(.borderedProminent)
             .tint(FidelTheme.accent)
@@ -116,13 +120,15 @@ struct FlashcardPracticeView: View {
     }
 
     private var wordActionButtons: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: FidelTheme.spaceM) {
             Button {
                 viewModel.recordAndReviewLater()
             } label: {
                 Label("Review Later", systemImage: "arrow.clockwise")
+                    .font(FidelTheme.headline)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, FidelTheme.spaceM)
+                    .minTouchTarget()
             }
             .buttonStyle(.bordered)
             .accessibilityLabel("Review later")
@@ -132,8 +138,10 @@ struct FlashcardPracticeView: View {
                 viewModel.recordAndKnowIt()
             } label: {
                 Label("Know It", systemImage: "checkmark.circle.fill")
+                    .font(FidelTheme.headline)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+                    .padding(.vertical, FidelTheme.spaceM)
+                    .minTouchTarget()
             }
             .buttonStyle(.borderedProminent)
             .tint(FidelTheme.accent)

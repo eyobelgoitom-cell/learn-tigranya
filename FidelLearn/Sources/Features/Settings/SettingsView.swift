@@ -5,10 +5,18 @@ struct SettingsView: View {
     @EnvironmentObject var appState: AppState
     @AppStorage("colorScheme") private var colorSchemeRaw = ColorSchemeOption.system.rawValue
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = true
+    @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    settingsHeaderRow
+                }
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
+
                 Section {
                     if appState.isAuthenticated {
                         HStack(spacing: FidelTheme.spaceM) {
@@ -36,7 +44,7 @@ struct SettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Account")
+                    Label("Account", systemImage: "person.circle")
                 }
 
                 Section {
@@ -60,7 +68,7 @@ struct SettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Appearance")
+                    Label("Appearance", systemImage: "paintbrush.fill")
                 }
 
                 Section {
@@ -75,10 +83,17 @@ struct SettingsView: View {
                         Label("Show Welcome Again", systemImage: "hand.wave")
                     }
                 } header: {
-                    Text("Data")
+                    Label("Data", systemImage: "externaldrive.fill")
                 }
             }
             .navigationTitle("Settings")
+            .onAppear {
+                if reduceMotion {
+                    appeared = true
+                } else {
+                    withAnimation(.easeOut(duration: 0.3)) { appeared = true }
+                }
+            }
             .listStyle(.insetGrouped)
             .background(Color(.systemGroupedBackground))
             .sheet(isPresented: $viewModel.showSignIn) {
@@ -86,6 +101,29 @@ struct SettingsView: View {
                     .environmentObject(appState)
             }
         }
+    }
+
+    private var settingsHeaderRow: some View {
+        HStack(alignment: .center, spacing: FidelTheme.spaceM) {
+            Text("ሀ")
+                .font(.system(size: 44, weight: .medium))
+                .foregroundStyle(FidelTheme.accent)
+            VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
+                Text("Fidel Learn")
+                    .font(FidelTheme.title)
+                Text("Learn Tigrinya & Amharic")
+                    .font(FidelTheme.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(FidelTheme.spaceM)
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .fill(FidelTheme.cardBackground)
+        )
+        .opacity(appeared ? 1 : 0)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: appeared)
     }
 }
 

@@ -94,6 +94,7 @@ struct VocabularyLessonView: View {
                 .font(FidelTheme.headline)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, FidelTheme.spaceM)
+                .minTouchTarget()
         }
         .buttonStyle(.borderedProminent)
         .tint(FidelTheme.accent)
@@ -135,8 +136,10 @@ private struct VocabularyWordCell: View {
                 Image(systemName: "play.circle.fill")
                     .font(.title2)
                     .foregroundStyle(FidelTheme.accent)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ScaledButtonStyle())
             .accessibilityLabel("Play pronunciation for \(word.translation)")
             .accessibilityHint("Plays the Tigrinya word \(word.transliteration)")
         }

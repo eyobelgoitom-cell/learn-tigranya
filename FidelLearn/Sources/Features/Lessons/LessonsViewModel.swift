@@ -11,6 +11,16 @@ final class LessonsViewModel: ObservableObject {
     @Published var searchResults: [SearchResult] = []
     @Published var isSearching = false
 
+    /// Total lessons and completed count for progress teaser.
+    var totalLessons: Int { lessonSections.flatMap(\.lessons).count }
+    var completedLessons: Int { lessonProgress.values.filter(\.isCompleted).count }
+    var progressTeaser: String? {
+        guard totalLessons > 0 else { return nil }
+        if completedLessons >= totalLessons { return "Completed all lessons!" }
+        if completedLessons == 0 { return "Start your journey — \(totalLessons) lessons await" }
+        return "\(completedLessons) of \(totalLessons) lessons completed"
+    }
+
     private let lessonService: LessonServiceProtocol
     private let progressService: ProgressServiceProtocol
     private var searchTask: Task<Void, Never>?

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct LessonsView: View {
     @StateObject private var viewModel: LessonsViewModel
+    @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(progressService: SyncProgressService) {
         _viewModel = StateObject(wrappedValue: LessonsViewModel(progressService: progressService))
@@ -51,6 +53,13 @@ struct LessonsView: View {
                                 }
                             }
                         }
+                        if viewModel.searchText.isEmpty, let teaser = viewModel.progressTeaser {
+                            Section {
+                                lessonsHeroRow(teaser: teaser)
+                            }
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
+                        }
                         ForEach(viewModel.lessonSections) { section in
                             Section(section.title) {
                                 ForEach(section.lessons) { lesson in
@@ -67,6 +76,24 @@ struct LessonsView: View {
             .onChange(of: viewModel.searchText) { _ in viewModel.performSearch() }
             .navigationTitle("Lessons")
             .listStyle(.insetGrouped)
+            .onAppear {
+                if viewModel.lessonSections.isEmpty == false {
+                    if reduceMotion {
+                        appeared = true
+                    } else {
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true }
+                    }
+                }
+            }
+            .onChange(of: viewModel.lessonSections.isEmpty) { isEmpty in
+                if !isEmpty && !appeared {
+                    if reduceMotion {
+                        appeared = true
+                    } else {
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true }
+                    }
+                }
+            }
             .navigationDestination(for: Lesson.self) { lesson in
                 if lesson.type == .vocabulary {
                     VocabularyLessonView(lesson: lesson)
@@ -82,6 +109,30 @@ struct LessonsView: View {
                 viewModel.loadLessons()
             }
         }
+    }
+
+    private func lessonsHeroRow(teaser: String) -> some View {
+        HStack(alignment: .top, spacing: FidelTheme.spaceM) {
+            Text("ሀ")
+                .font(.system(size: 40, weight: .medium))
+                .foregroundStyle(FidelTheme.accent)
+            VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
+                Text("Learn the Fidel")
+                    .font(FidelTheme.headline)
+                Text(teaser)
+                    .font(FidelTheme.body)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(FidelTheme.spaceM)
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .fill(FidelTheme.cardBackground)
+        )
+        .opacity(appeared ? 1 : 0)
+        .offset(y: appeared ? 0 : 8)
+        .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.8), value: appeared)
     }
 
     private var emptyStateView: some View {

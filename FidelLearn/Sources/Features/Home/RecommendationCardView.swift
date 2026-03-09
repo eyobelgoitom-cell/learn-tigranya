@@ -6,30 +6,31 @@ struct RecommendationCardView: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 16) {
+            HStack(spacing: FidelTheme.spaceM) {
                 Image(systemName: iconName)
                     .font(.title2)
                     .foregroundStyle(FidelTheme.accent)
-                    .frame(width: 32, alignment: .center)
-                VStack(alignment: .leading, spacing: 4) {
+                    .frame(width: 32, height: 32)
+                VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
                     Text(recommendation.title)
-                        .font(.headline)
+                        .font(FidelTheme.headline)
                         .foregroundStyle(.primary)
                     if let subtitle = recommendation.subtitle {
                         Text(subtitle)
-                            .font(.subheadline)
+                            .font(FidelTheme.callout)
                             .foregroundStyle(.secondary)
                             .lineLimit(2)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "chevron.right")
-                    .font(.caption)
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.tertiary)
             }
-            .padding()
+            .padding(FidelTheme.spaceM)
+            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressableCardStyle())
         .background(FidelTheme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: FidelTheme.radiusL))
         .overlay(

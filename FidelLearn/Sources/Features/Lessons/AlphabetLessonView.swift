@@ -98,6 +98,7 @@ struct AlphabetLessonView: View {
                 .font(FidelTheme.headline)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, FidelTheme.spaceM)
+                .minTouchTarget()
         }
         .buttonStyle(.borderedProminent)
         .tint(FidelTheme.accent)
@@ -128,8 +129,10 @@ private struct FidelCharacterCell: View {
                 Image(systemName: "play.circle.fill")
                     .font(.title2)
                     .foregroundStyle(FidelTheme.accent)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ScaledButtonStyle())
             .accessibilityLabel("Play pronunciation")
             .accessibilityHint("Plays the sound for \(character.transliteration)")
         }

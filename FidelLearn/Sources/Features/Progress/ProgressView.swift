@@ -2,6 +2,8 @@ import SwiftUI
 
 struct UserProgressView: View {
     @StateObject private var viewModel: ProgressViewModel
+    @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(progressService: SyncProgressService) {
         _viewModel = StateObject(wrappedValue: ProgressViewModel(progressService: progressService))
@@ -11,6 +13,7 @@ struct UserProgressView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: FidelTheme.spaceL) {
+                    progressHeroSection
                     statsGrid
                     if !viewModel.masteryByGroup.isEmpty {
                         masterySection
@@ -18,12 +21,43 @@ struct UserProgressView: View {
                     achievementsSection
                 }
                 .padding(FidelTheme.spaceL)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 12)
             }
             .refreshable { viewModel.loadProgress() }
             .navigationTitle("Progress")
             .background(Color(.systemGroupedBackground))
-            .onAppear { viewModel.loadProgress() }
+            .onAppear {
+                viewModel.loadProgress()
+                if reduceMotion {
+                    appeared = true
+                } else {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true }
+                }
+            }
         }
+    }
+
+    private var progressHeroSection: some View {
+        HStack(alignment: .top, spacing: FidelTheme.spaceM) {
+            Text("ሀ")
+                .font(.system(size: 40, weight: .medium))
+                .foregroundStyle(FidelTheme.accent)
+            VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
+                Text("Your Progress")
+                    .font(FidelTheme.headline)
+                Text(viewModel.motivationalSummary)
+                    .font(FidelTheme.body)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(FidelTheme.spaceM)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .fill(FidelTheme.cardBackground)
+        )
     }
 
     private var statsGrid: some View {
