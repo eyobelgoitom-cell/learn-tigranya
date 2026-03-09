@@ -58,10 +58,18 @@ struct PracticeView: View {
                     Label("Practice Modes", systemImage: "brain.head.profile")
                         .font(FidelTheme.headline)
                         .foregroundStyle(.primary)
+                } footer: {
+                    if viewModel.accuracy == 0 && viewModel.streak == 0 {
+                        Text("Complete a lesson first, then practice with flashcards or quizzes to reinforce what you learned.")
+                            .font(FidelTheme.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             .navigationTitle("Practice")
             .listStyle(.insetGrouped)
+            .listRowSeparatorTint(Color(.separator))
+            .background(Color(.systemGroupedBackground))
             .refreshable { viewModel.loadStats() }
             .onAppear {
                 viewModel.loadStats()
@@ -135,6 +143,10 @@ struct PracticeView: View {
             RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                 .fill(FidelTheme.cardBackground)
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .stroke(FidelTheme.accent.opacity(0.12), lineWidth: 1)
+        )
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 8)
         .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.8), value: appeared)
@@ -162,8 +174,10 @@ struct PracticeModeRow: View {
                 Text(subtitle)
                     .font(FidelTheme.caption)
                     .foregroundStyle(.secondary)
+                    .lineLimit(2)
             }
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Spacer(minLength: FidelTheme.spaceS)
         }
         .padding(.vertical, FidelTheme.spaceS)
     }

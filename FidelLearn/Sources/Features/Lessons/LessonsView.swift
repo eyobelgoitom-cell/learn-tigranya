@@ -72,11 +72,18 @@ struct LessonsView: View {
                                 Label(section.title, systemImage: sectionIcon(for: section))
                                     .font(FidelTheme.headline)
                                     .foregroundStyle(.primary)
+                            } footer: {
+                                if section.id.lowercased() == "alphabet" {
+                                    Text("Complete each row to master the full Fidel alphabet.")
+                                        .font(FidelTheme.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                         }
                     }
                 }
             }
+            .listRowSeparatorTint(Color(.separator))
             .searchable(text: $viewModel.searchText, prompt: "Search lessons, words, characters…")
             .onChange(of: viewModel.searchText) { _ in viewModel.performSearch() }
             .refreshable { viewModel.loadLessons() }
@@ -146,6 +153,10 @@ struct LessonsView: View {
             RoundedRectangle(cornerRadius: FidelTheme.radiusL)
                 .fill(FidelTheme.cardBackground)
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: FidelTheme.radiusL)
+                .stroke(FidelTheme.accent.opacity(0.12), lineWidth: 1)
+        )
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 8)
         .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.8), value: appeared)
@@ -209,7 +220,7 @@ struct SearchResultRow: View {
             Spacer()
             if let progress, progress.isCompleted {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
+                    .foregroundStyle(FidelTheme.success)
             }
         }
         .padding(.vertical, 4)
@@ -245,10 +256,11 @@ struct LessonRowView: View {
                     Text(sub)
                         .font(FidelTheme.caption)
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .lineLimit(2)
                 }
             }
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Spacer(minLength: FidelTheme.spaceS)
             if let progress, progress.isCompleted {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.title3)
