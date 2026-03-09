@@ -105,6 +105,7 @@ struct FlashcardPracticeView: View {
     private var actionButtons: some View {
         HStack(spacing: FidelTheme.spaceM) {
             Button {
+                HapticService.light()
                 viewModel.recordAndReviewLater()
             } label: {
                 Label("Review Later", systemImage: "arrow.clockwise")
@@ -118,6 +119,7 @@ struct FlashcardPracticeView: View {
             .accessibilityHint("Adds card to review queue")
 
             Button {
+                HapticService.success()
                 viewModel.recordAndKnowIt()
             } label: {
                 Label("Know It", systemImage: "checkmark.circle.fill")
@@ -136,6 +138,7 @@ struct FlashcardPracticeView: View {
     private var wordActionButtons: some View {
         HStack(spacing: FidelTheme.spaceM) {
             Button {
+                HapticService.light()
                 viewModel.recordAndReviewLater()
             } label: {
                 Label("Review Later", systemImage: "arrow.clockwise")
@@ -149,6 +152,7 @@ struct FlashcardPracticeView: View {
             .accessibilityHint("Adds card to review queue")
 
             Button {
+                HapticService.success()
                 viewModel.recordAndKnowIt()
             } label: {
                 Label("Know It", systemImage: "checkmark.circle.fill")

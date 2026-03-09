@@ -92,6 +92,7 @@ struct VocabularyLessonView: View {
 
     private var finishButton: some View {
         Button {
+            HapticService.success()
             Task {
                 await progressService.saveProgress(lessonId: lesson.id, completed: true, score: nil)
                 await learningEventService.record(LearningEvent(

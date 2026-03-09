@@ -160,8 +160,8 @@
 
 ### 6.3 Polish
 - [ ] Add Ethiopic fonts to project
-- [ ] Dark mode support
-- [ ] App icon, launch screen
+- [x] Dark mode support (Settings picker, system colors)
+- [x] App icon, launch screen
 
 **Branch:** `feature/LIN-06-vocabulary-and-polish`
 

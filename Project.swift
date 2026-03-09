@@ -18,7 +18,7 @@ let project = Project(
             bundleId: "com.fidellearn.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: .extendingDefault(with: [
-                "UILaunchStoryboardName": "",
+                "UILaunchStoryboardName": "LaunchScreen",
                 "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait", "UIInterfaceOrientationLandscapeLeft", "UIInterfaceOrientationLandscapeRight"],
                 "CFBundleDisplayName": "Fidel Learn",
                 "ITSAppUsesNonExemptEncryption": false,

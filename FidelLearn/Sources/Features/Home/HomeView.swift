@@ -125,8 +125,19 @@ struct HomeView: View {
                 }
                 .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: FidelTheme.spaceXS) {
-                    Text("\(viewModel.streak) day streak")
-                        .font(FidelTheme.headline)
+                    HStack(spacing: FidelTheme.spaceXS) {
+                        Text("\(viewModel.streak) day streak")
+                            .font(FidelTheme.headline)
+                        if viewModel.streak == 7 || viewModel.streak == 30 {
+                            Text("Milestone!")
+                                .font(FidelTheme.caption)
+                                .foregroundStyle(FidelTheme.accent)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(FidelTheme.accent.opacity(0.15))
+                                .clipShape(Capsule())
+                        }
+                    }
                     Text(streakSubtext)
                         .font(FidelTheme.caption)
                         .foregroundStyle(viewModel.isStreakAtRisk ? FidelTheme.error : .secondary)
@@ -143,7 +154,7 @@ struct HomeView: View {
             }
             .padding(FidelTheme.spaceM)
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(viewModel.streak) day streak. \(viewModel.isStreakAtRisk ? "At risk" : "Keep learning.")")
+            .accessibilityLabel("\(viewModel.streak) day streak. \(viewModel.streak == 7 || viewModel.streak == 30 ? "Milestone." : "") \(viewModel.isStreakAtRisk ? "At risk" : "Keep learning.")")
         }
     }
 
@@ -165,6 +176,7 @@ struct HomeView: View {
 
     private var dailyGoalCard: some View {
         Button {
+            HapticService.light()
             if viewModel.lessonsCompletedToday >= viewModel.dailyGoal {
                 selectedTab = .practice
             } else {
